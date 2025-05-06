@@ -19,10 +19,10 @@ export default function TermsPage() {
         </div>
       </div>
 
-      <section className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
+      <section className="container mx-auto py-16 px-6 sm:px-10 lg:px-12">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg shadow-md p-8">
-            <div className="prose max-w-none">
+          <div className="bg-white rounded-2xl shadow-lg p-10 sm:p-12">
+            <div className="prose max-w-none prose-lg text-gray-800 space-y-8">
               <h2>1. Membership Terms</h2>
               <p>
                 Panaroma Hills Soccer Club membership is valid for one year from the date of registration and payment of the appropriate membership fee. 
@@ -135,7 +135,7 @@ export default function TermsPage() {
               </p>
 
               <p className="text-sm text-gray-600 mt-8">
-                Last updated: May 1, 2023
+                Last updated: May 1, 2025
               </p>
             </div>
           </div>
