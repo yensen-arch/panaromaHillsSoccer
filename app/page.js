@@ -17,7 +17,7 @@ export default function Home() {
       
       <section className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Ltest Updates</h2>
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Latest Updates</h2>
           <div className="h-1 w-20 bg-primary-600 mx-auto"></div>
         </div>
         <LatestUpdates />

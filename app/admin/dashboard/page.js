@@ -164,7 +164,7 @@ export default function AdminDashboard() {
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-700">Total Members</h3>
-              <p className="text-2xl font-bold text-gray-900">124</p>
+              <p className="text-2xl font-bold text-gray-900">To be made</p>
             </div>
           </div>
         </div>
@@ -176,7 +176,7 @@ export default function AdminDashboard() {
             </div>
             <div>
               <h3 className="text-lg font-semibold text-gray-700">Upcoming Events</h3>
-              <p className="text-2xl font-bold text-gray-900">3</p>
+              <p className="text-2xl font-bold text-gray-900">To be made</p>
             </div>
           </div>
         </div>
