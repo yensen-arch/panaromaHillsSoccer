@@ -2,6 +2,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { NewsDetail } from '@/components/latest/news-detail';
+import { Navbar } from '@/components/ui/navbar';
+import { Footer } from '@/components/ui/footer';
 
 export async function generateMetadata({ params }) {
   // In a real app, fetch the news item from the database
@@ -22,6 +24,7 @@ export default function NewsPage({ params }) {
   
   return (
     <div className="flex flex-col w-full">
+      <Navbar />
       <div className="bg-primary-800 text-white py-12">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-3xl md:text-4xl font-bold mb-2">News & Updates</h1>
@@ -44,6 +47,7 @@ export default function NewsPage({ params }) {
         
         <NewsDetail id={id} />
       </section>
+      <Footer />
     </div>
   );
 }

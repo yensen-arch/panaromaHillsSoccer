@@ -1,4 +1,6 @@
 import Image from 'next/image';
+import { Navbar } from '@/components/ui/navbar';
+import { Footer } from '@/components/ui/footer';
 
 export const metadata = {
   title: 'Gallery | FC Green Valley',
@@ -84,6 +86,7 @@ export default function GalleryPage() {
 
   return (
     <div className="flex flex-col w-full">
+      <Navbar />
       <div className="bg-primary-800 text-white py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Photo Gallery</h1>
@@ -118,6 +121,7 @@ export default function GalleryPage() {
           ))}
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

@@ -9,6 +9,8 @@ import {
   ArrowRight,
   Check
 } from 'lucide-react';
+import { Navbar } from '@/components/ui/navbar';
+import { Footer } from '@/components/ui/footer';  
 
 // Replace with your own Stripe publishable key when actually implementing
 const stripePromise = loadStripe('pk_test_your_key');
@@ -298,7 +300,6 @@ export default function RegisterPage() {
       </div>
     </div>
   );
-
   const renderStep2 = () => (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Additional Information</h2>
