@@ -490,7 +490,7 @@ export default function RegisterPage() {
       <div className="mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Terms and Conditions</h3>
         <div className="h-40 overflow-y-auto p-4 bg-white border border-gray-200 rounded-md mb-4 text-sm text-gray-700">
-          <p className="mb-2">By registering with FC Green Valley, you agree to the following terms and conditions:</p>
+          <p className="mb-2">By registering with Panaroma Hills Soccer Club, you agree to the following terms and conditions:</p>
           <ol className="list-decimal pl-5 space-y-2">
             <li>Membership is valid for one year from the date of registration.</li>
             <li>Members must adhere to the club's code of conduct at all times.</li>
@@ -560,7 +560,7 @@ export default function RegisterPage() {
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Registration Successful!</h2>
           <p className="text-lg text-gray-700 mb-6">
-            Thank you for registering with FC Green Valley. We're excited to welcome you to our club!
+            Thank you for registering with Panaroma Hills Soccer Club. We're excited to welcome you to our club!
           </p>
           <p className="text-gray-700 mb-8">
             You will receive a confirmation email shortly with your membership details and next steps.
@@ -598,7 +598,7 @@ export default function RegisterPage() {
     <div className="flex flex-col w-full">
       <div className="bg-primary-800 text-white py-20">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Join FC Green Valley</h1>
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Join Panaroma Hills Soccer Club</h1>
           <p className="text-xl max-w-2xl mx-auto">
             Become a member of our football community today
           </p>

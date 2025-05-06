@@ -42,7 +42,7 @@ export function NewsDetail({ id }) {
           {
             _id: '3',
             title: 'New Youth Coach Joins the Club',
-            content: 'We\'re excited to welcome James Thompson to our coaching staff. James brings 15 years of experience working with youth players and will lead our U14 team.\n\nJames has previously worked with several professional academies and holds a UEFA B coaching license. His philosophy focuses on developing technical skills while ensuring players enjoy the game.\n\n"I\'m thrilled to join FC Green Valley," says James. "The club has a fantastic reputation for youth development, and I can\'t wait to work with the talented young players here."\n\nJames will begin training sessions next week, and we\'re confident that our U14 players will benefit enormously from his expertise and passion for the game.',
+            content: 'We\'re excited to welcome James Thompson to our coaching staff. James brings 15 years of experience working with youth players and will lead our U14 team.\n\nJames has previously worked with several professional academies and holds a UEFA B coaching license. His philosophy focuses on developing technical skills while ensuring players enjoy the game.\n\n"I\'m thrilled to join Panaroma Hills Soccer Club," says James. "The club has a fantastic reputation for youth development, and I can\'t wait to work with the talented young players here."\n\nJames will begin training sessions next week, and we\'re confident that our U14 players will benefit enormously from his expertise and passion for the game.',
             imageUrl: 'https://images.pexels.com/photos/8224721/pexels-photo-8224721.jpeg',
             createdAt: new Date('2023-05-28'),
             author: 'Club Director Emma Peterson'

@@ -9,7 +9,7 @@ export async function generateMetadata({ params }) {
   // In a real app, fetch the news item from the database
   // For now, we'll return placeholder metadata
   return {
-    title: 'News Details | FC Green Valley',
+    title: 'News Details | Panaroma Hills Soccer Club',
     description: 'Read the full story of our latest news and updates',
   };
 }

@@ -2,8 +2,8 @@ import { Navbar } from '@/components/ui/navbar';
 import { Footer } from '@/components/ui/footer';
 
 export const metadata = {
-  title: 'Terms & Conditions | FC Green Valley',
-  description: 'FC Green Valley membership terms and conditions',
+  title: 'Terms & Conditions | Panaroma Hills Soccer Club',
+  description: 'Panaroma Hills Soccer Club membership terms and conditions',
 };
 
 export default function TermsPage() {
@@ -14,7 +14,7 @@ export default function TermsPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl font-bold mb-4">Terms & Conditions</h1>
           <p className="text-xl max-w-2xl mx-auto">
-            Important information about FC Green Valley membership
+            Important information about Panaroma Hills Soccer Club membership
           </p>
         </div>
       </div>
@@ -25,7 +25,7 @@ export default function TermsPage() {
             <div className="prose max-w-none">
               <h2>1. Membership Terms</h2>
               <p>
-                FC Green Valley membership is valid for one year from the date of registration and payment of the appropriate membership fee. 
+                Panaroma Hills Soccer Club membership is valid for one year from the date of registration and payment of the appropriate membership fee. 
                 Members must adhere to all club rules and regulations as set forth in this document and as updated periodically.
               </p>
 
@@ -125,7 +125,7 @@ export default function TermsPage() {
                 If you have any questions about these terms and conditions, please contact:
               </p>
               <p>
-                FC Green Valley<br />
+                Panaroma Hills Soccer Club<br />
                 123 Football Lane<br />
                 Green Valley<br />
                 London, SW1A 1AA<br />

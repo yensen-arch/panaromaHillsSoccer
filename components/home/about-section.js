@@ -9,7 +9,7 @@ export function AboutSection() {
             <h2 className="text-3xl font-bold text-gray-900 mb-6">About Our Club</h2>
             <div className="h-1 w-20 bg-primary-600 mb-6"></div>
             <p className="text-lg text-gray-700 mb-4">
-              FC Green Valley was founded in 2005 with a vision to create a community-focused 
+              Panaroma Hills Soccer Club was founded in 2005 with a vision to create a community-focused 
               football club that develops talent and promotes the love of the beautiful game.
             </p>
             <p className="text-lg text-gray-700 mb-4">

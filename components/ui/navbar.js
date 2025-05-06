@@ -24,7 +24,7 @@ export function Navbar() {
   return (
     <header 
       className={`sticky top-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white shadow-md py-2' : 'bg-transparent py-4'
+        isScrolled ? 'bg-white shadow-md py-2' : 'bg-primary-800 py-4'
       }`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -33,7 +33,7 @@ export function Navbar() {
             <div className="flex items-center space-x-2">
               <Cog className="h-8 w-8 text-primary-600 rotate-45" />
               <span className={`font-bold text-xl ${isScrolled ? 'text-primary-800' : 'text-white'}`}>
-                FC Green Valley
+                Panaroma Hills Soccer Club
               </span>
             </div>
           </Link>

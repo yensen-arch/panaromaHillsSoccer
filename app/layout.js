@@ -7,8 +7,8 @@ import { Toaster } from '@/components/ui/toaster';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata = {
-  title: 'FC Green Valley | Local Football Club',
-  description: 'Home of FC Green Valley - Join our community of football enthusiasts',
+  title: 'Panaroma Hills Soccer Club | Local Football Club',
+  description: 'Home of Panaroma Hills Soccer Club - Join our community of football enthusiasts',
 };
 
 export default function RootLayout({ children }) {

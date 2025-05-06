@@ -3,7 +3,7 @@ import Image from 'next/image';
 export function TestimonialsSection() {
   const testimonials = [
     {
-      quote: "Joining FC Green Valley was one of the best decisions I've made. The coaching is excellent and I've made lifelong friends here.",
+      quote: "Joining Panaroma Hills Soccer Club was one of the best decisions I've made. The coaching is excellent and I've made lifelong friends here.",
       author: "Michael Johnson",
       role: "Club Member, 3 years",
       image: "https://images.pexels.com/photos/2379005/pexels-photo-2379005.jpeg"

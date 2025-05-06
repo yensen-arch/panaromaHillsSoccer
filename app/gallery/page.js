@@ -3,8 +3,8 @@ import { Navbar } from '@/components/ui/navbar';
 import { Footer } from '@/components/ui/footer';
 
 export const metadata = {
-  title: 'Gallery | FC Green Valley',
-  description: 'View photos of FC Green Valley matches, events, and community activities',
+  title: 'Gallery | Panaroma Hills Soccer Club',
+  description: 'View photos of Panaroma Hills Soccer Club matches, events, and community activities',
 };
 
 export default function GalleryPage() {

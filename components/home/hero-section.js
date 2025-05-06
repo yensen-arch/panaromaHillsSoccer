@@ -7,7 +7,7 @@ export function HeroSection() {
       <div className="hero-overlay"></div>
       <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-4">
         <h1 className="text-4xl md:text-6xl font-bold mb-4 animate-fade-in">
-          FC Green Valley
+          Panaroma Hills Soccer Club
         </h1>
         <p className="text-xl md:text-2xl max-w-2xl mb-8 animate-fade-in">
           Join our community of football enthusiasts and be part of something special

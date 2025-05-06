@@ -4,8 +4,8 @@ import { Navbar } from '@/components/ui/navbar';
 import { Footer } from '@/components/ui/footer';
 
 export const metadata = {
-  title: 'Latest News & Updates | FC Green Valley',
-  description: 'Stay up-to-date with the latest news, events, and announcements from FC Green Valley',
+  title: 'Latest News & Updates | Panaroma Hills Soccer Club',
+  description: 'Stay up-to-date with the latest news, events, and announcements from Panaroma Hills Soccer Club',
 };
 
 export default function LatestNewsPage() {
@@ -16,7 +16,7 @@ export default function LatestNewsPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Latest News & Updates</h1>
           <p className="text-xl max-w-2xl mx-auto">
-            Stay up-to-date with the latest news, events, and announcements from FC Green Valley
+            Stay up-to-date with the latest news, events, and announcements from Panaroma Hills Soccer Club
           </p>
         </div>
       </div>

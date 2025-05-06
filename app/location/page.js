@@ -17,7 +17,7 @@ export default function LocationPage() {
     };
 
     window.initMap = function() {
-      // FC Green Valley (fictional location)
+      // Panaroma Hills Soccer Club (fictional location)
       const location = { lat: 51.507351, lng: -0.127758 };
       const mapOptions = {
         zoom: 15,
@@ -118,12 +118,12 @@ export default function LocationPage() {
       const marker = new google.maps.Marker({
         position: location,
         map: map,
-        title: "FC Green Valley"
+        title: "Panaroma Hills Soccer Club"
       });
 
       const infoWindow = new google.maps.InfoWindow({
         content: `<div style="padding: 10px; max-width: 200px;">
-                    <h3 style="margin: 0 0 5px; font-weight: bold;">FC Green Valley</h3>
+                    <h3 style="margin: 0 0 5px; font-weight: bold;">Panaroma Hills Soccer Club</h3>
                     <p style="margin: 0;">123 Football Lane<br>London, UK</p>
                   </div>`
       });
@@ -233,7 +233,7 @@ export default function LocationPage() {
                   <div className="text-center p-4">
                     <p className="text-gray-700 mb-2">Google Map would appear here</p>
                     <p className="text-sm text-gray-500">
-                      FC Green Valley<br />
+                      Panaroma Hills Soccer Club<br />
                       123 Football Lane, London
                     </p>
                   </div>

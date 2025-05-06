@@ -10,7 +10,7 @@ export function Footer() {
           <div>
             <div className="flex items-center space-x-2 mb-4">
               <Cog className="h-8 w-8 text-primary-500 rotate-45" />
-              <span className="font-bold text-xl">FC Green Valley</span>
+              <span className="font-bold text-xl">Panaroma Hills Soccer Club</span>
             </div>
             <p className="text-gray-400 mb-4">
               Join our community of football enthusiasts and be part of something special.
@@ -113,7 +113,7 @@ export function Footer() {
         
         <div className="pt-8 border-t border-gray-800 text-gray-400 text-sm">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <p>&copy; {new Date().getFullYear()} FC Green Valley. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Panaroma Hills Soccer Club. All rights reserved.</p>
             <div className="mt-4 md:mt-0">
               <ul className="flex space-x-6">
                 <li>

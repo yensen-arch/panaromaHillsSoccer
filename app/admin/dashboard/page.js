@@ -385,7 +385,7 @@ export default function AdminDashboard() {
       {/* Sidebar */}
       <div className="hidden md:flex md:flex-col md:w-64 md:fixed md:inset-y-0 bg-primary-800 text-white">
         <div className="flex items-center justify-center h-16 border-b border-primary-700">
-          <div className="text-lg font-bold">FC Green Valley Admin</div>
+          <div className="text-lg font-bold">Panaroma Hills Soccer Club Admin</div>
         </div>
         <div className="flex-1 flex flex-col overflow-y-auto pt-5 pb-4">
           <nav className="mt-5 flex-1 px-2 space-y-1">
@@ -460,7 +460,7 @@ export default function AdminDashboard() {
       {/* Mobile header */}
       <div className="md:hidden bg-primary-800 text-white p-4 w-full fixed top-0 z-10">
         <div className="flex justify-between items-center">
-          <div className="text-lg font-bold">FC Green Valley Admin</div>
+          <div className="text-lg font-bold">Panaroma Hills Soccer Club Admin</div>
           <button
             onClick={handleLogout}
             className="flex items-center text-primary-100 hover:text-white"
