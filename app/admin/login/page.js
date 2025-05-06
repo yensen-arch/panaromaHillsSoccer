@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Cog, Lock, User } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { login } from '@/lib/auth-client';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -25,20 +26,7 @@ export default function AdminLoginPage() {
     setError('');
     
     try {
-      const response = await fetch('/api/admin/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
-      }
-
-      // Store the token
-      localStorage.setItem('adminToken', data.token);
+      await login(email, password);
       
       toast({
         title: "Success",
@@ -140,12 +128,6 @@ export default function AdminLoginPage() {
             </button>
           </div>
         </form>
-        
-        <div className="mt-6 text-center text-sm text-gray-500">
-          <p>For demo purposes, use:</p>
-          <p><strong>Email:</strong> admin@example.com</p>
-          <p><strong>Password:</strong> password</p>
-        </div>
       </div>
     </div>
   );

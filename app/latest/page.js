@@ -9,27 +9,33 @@ export const metadata = {
   description: 'Stay up-to-date with the latest news, events, and announcements from Panaroma Hills Soccer Club',
 };
 
-export default function LatestNewsPage() {
+export default async function LatestNewsPage() {
+  // Fetch news data server-side
+  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`, {
+    cache: 'no-store' // Disable caching to always get fresh data
+  });
+  
+  const newsItems = await response.json();
+
   return (
     <div className="flex flex-col w-full">
       <Navbar />
       <div className="relative bg-primary-800 text-white py-20 overflow-hidden">
-  <div className="absolute inset-0 z-0">
-    <Image
-      src="https://res.cloudinary.com/dqh2tacov/image/upload/v1746527286/texture-grass-field_1232-251_vbf97q.webp"
-      alt="Grass Background"
-      fill
-      className="object-cover opacity-30"
-    />
-  </div>
-  <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h1 className="text-4xl md:text-5xl font-bold mb-4">Latest News & Updates</h1>
-    <p className="text-xl max-w-2xl mx-auto">
-      Stay up-to-date with the latest news, events, and announcements from Panaroma Hills Soccer Club
-    </p>
-  </div>
-</div>
-
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://res.cloudinary.com/dqh2tacov/image/upload/v1746527286/texture-grass-field_1232-251_vbf97q.webp"
+            alt="Grass Background"
+            fill
+            className="object-cover opacity-30"
+          />
+        </div>
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-4">Latest News & Updates</h1>
+          <p className="text-xl max-w-2xl mx-auto">
+            Stay up-to-date with the latest news, events, and announcements from Panaroma Hills Soccer Club
+          </p>
+        </div>
+      </div>
 
       <section className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
@@ -40,7 +46,7 @@ export default function LatestNewsPage() {
           </div>
         </div>
         
-        <LatestNewsFeed />
+        <LatestNewsFeed initialNews={newsItems} />
       </section>
       <Footer />
     </div>

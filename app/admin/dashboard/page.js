@@ -14,6 +14,7 @@ import {
   FileText
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { logout, checkAuth } from '@/lib/auth-client';
 
 export default function AdminDashboard() {
   const [isClient, setIsClient] = useState(false);
@@ -34,15 +35,17 @@ export default function AdminDashboard() {
   useEffect(() => {
     setIsClient(true);
     
-    // Check for admin token
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
+    // Check authentication
+    const checkAuthentication = async () => {
+      const isAuthenticated = await checkAuth();
+      if (!isAuthenticated) {
+        router.push('/admin/login');
+        return;
+      }
+      fetchNews();
+    };
     
-    // Fetch news data
-    fetchNews();
+    checkAuthentication();
   }, [router]);
 
   const fetchNews = async () => {
@@ -61,8 +64,8 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminToken');
+  const handleLogout = async () => {
+    await logout();
     router.push('/admin/login');
   };
 
@@ -97,18 +100,9 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteNews = async (id) => {
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
-
     try {
       const response = await fetch(`/api/news?id=${id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
       });
 
       const data = await response.json();
@@ -135,12 +129,6 @@ export default function AdminDashboard() {
 
   const handleSubmitNews = async (e) => {
     e.preventDefault();
-    
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
 
     try {
       const url = isEditing ? '/api/news' : '/api/news';
@@ -150,7 +138,6 @@ export default function AdminDashboard() {
         method,
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
         },
         body: JSON.stringify(isEditing ? {
           _id: currentNewsId,

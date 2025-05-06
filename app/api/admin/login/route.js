@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createToken } from '@/lib/auth';
+import { createToken, setSession } from '@/lib/auth-server';
 
 export async function POST(request) {
   try {
@@ -13,13 +13,12 @@ export async function POST(request) {
       );
     }
 
-    // Create JWT token
-    const token = await createToken({ email, role: 'admin' });
+    // Create and set session
+    await setSession({ email, role: 'admin' });
 
-    // Return success response with token
+    // Return success response
     return NextResponse.json({ 
-      success: true,
-      token 
+      success: true
     });
 
   } catch (error) {
