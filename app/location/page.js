@@ -8,14 +8,6 @@ import Image from 'next/image';
 
 export default function LocationPage() {
   useEffect(() => {
-    // In a real app, you would use a proper Google Maps API key
-    const loadGoogleMapsScript = () => {
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=YOURKEY&callback=initMap`;
-      script.async = true;
-      script.defer = true;
-      document.head.appendChild(script);
-    };
 
     window.initMap = function() {
       // Panaroma Hills Soccer Club (fictional location)
@@ -134,8 +126,6 @@ export default function LocationPage() {
       });
     };
 
-    // Don't actually load the real script in this demo as we don't have a Google Maps API key
-    // loadGoogleMapsScript();
   }, []);
 
   return (

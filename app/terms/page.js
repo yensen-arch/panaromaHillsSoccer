@@ -1,5 +1,6 @@
 import { Navbar } from '@/components/ui/navbar';
 import { Footer } from '@/components/ui/footer';
+import Image from 'next/image';
 
 export const metadata = {
   title: 'Terms & Conditions | Panaroma Hills Soccer Club',
@@ -10,14 +11,20 @@ export default function TermsPage() {
   return (
     <div className="flex flex-col w-full">
       <Navbar />
-      <div className="bg-primary-800 text-white py-16">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl font-bold mb-4">Terms & Conditions</h1>
-          <p className="text-xl max-w-2xl mx-auto">
-            Important information about Panaroma Hills Soccer Club membership
-          </p>
-        </div>
-      </div>
+      <div className="relative bg-primary-800 text-white py-20 overflow-hidden">
+  <img
+    src="https://res.cloudinary.com/dqh2tacov/image/upload/v1746527286/texture-grass-field_1232-251_vbf97q.webp"
+    alt="Grass background"
+    className="absolute inset-0 w-full h-full object-cover opacity-30"
+  />
+  <div className="relative container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 className="text-5xl font-bold mb-6">Terms & Conditions</h1>
+    <p className="text-xl max-w-3xl mx-auto leading-relaxed">
+      Important information about Panaroma Hills Soccer Club membership
+    </p>
+  </div>
+</div>
+
 
       <section className="container mx-auto py-16 px-6 sm:px-10 lg:px-12">
         <div className="max-w-4xl mx-auto">
