@@ -9,11 +9,11 @@ import {
   ArrowRight,
   Check
 } from 'lucide-react';
-import { Navbar } from '@/components/ui/navbar';
-import { Footer } from '@/components/ui/footer';  
+import Image  from 'next/image';
+
 
 // Replace with your own Stripe publishable key when actually implementing
-const stripePromise = loadStripe('pk_test_your_key');
+const stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY);
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
@@ -187,7 +187,6 @@ export default function RegisterPage() {
   const renderStep1 = () => (
     <div className="space-y-6">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Personal Information</h2>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
@@ -596,14 +595,23 @@ export default function RegisterPage() {
 
   return (
     <div className="flex flex-col w-full">
-      <div className="bg-primary-800 text-white py-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Join Panaroma Hills Soccer Club</h1>
-          <p className="text-xl max-w-2xl mx-auto">
-            Become a member of our football community today
-          </p>
-        </div>
-      </div>
+      <div className="relative bg-primary-800 text-white py-20 overflow-hidden">
+  <div className="absolute inset-0 z-0">
+    <Image
+      src="https://res.cloudinary.com/dqh2tacov/image/upload/v1746527286/texture-grass-field_1232-251_vbf97q.webp"
+      alt="Grass Background"
+      fill
+      className="object-cover opacity-30"
+    />
+  </div>
+  <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 className="text-4xl md:text-5xl font-bold mb-4">Join Panaroma Hills Soccer Club</h1>
+    <p className="text-xl max-w-2xl mx-auto">
+      Become a member of our football community today
+    </p>
+  </div>
+</div>
+
 
       <section className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         {!paymentStatus ? (
