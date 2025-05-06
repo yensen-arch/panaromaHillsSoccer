@@ -100,6 +100,10 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteNews = async (id) => {
+    if (!confirm('Are you sure you want to delete this news item?')) {
+      return;
+    }
+
     try {
       const response = await fetch(`/api/news?id=${id}`, {
         method: 'DELETE',
@@ -138,6 +142,7 @@ export default function AdminDashboard() {
         method,
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify(isEditing ? {
           _id: currentNewsId,

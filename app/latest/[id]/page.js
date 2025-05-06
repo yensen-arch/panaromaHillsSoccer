@@ -5,6 +5,7 @@ import { NewsDetail } from '@/components/latest/news-detail';
 import { Navbar } from '@/components/ui/navbar';
 import { Footer } from '@/components/ui/footer';
 import clientPromise from '@/lib/mongodb';
+import { ObjectId } from 'mongodb';
 
 export async function generateMetadata({ params }) {
   const { id } = params;
@@ -12,8 +13,8 @@ export async function generateMetadata({ params }) {
   try {
     const client = await clientPromise;
     const db = client.db();
-    const news = await db.collection('news').findOne({ _id: id });
-
+    const news = await db.collection('news').findOne({ _id: /^[0-9a-fA-F]{24}$/.test(id) ? new ObjectId(id) : id });
+    console.log("news", news);
     if (!news) {
       return {
         title: 'News Not Found | Panaroma Hills Soccer Club',
@@ -26,6 +27,7 @@ export async function generateMetadata({ params }) {
       description: news.content.substring(0, 160),
     };
   } catch (error) {
+    console.error('Error in generateMetadata:', error);
     return {
       title: 'News Details | Panaroma Hills Soccer Club',
       description: 'Read the full story of our latest news and updates',
@@ -41,9 +43,27 @@ export default async function NewsPage({ params }) {
   try {
     const client = await clientPromise;
     const db = client.db();
-    const news = await db.collection('news').findOne({ _id: id });
+    
+    // First try to find by string ID
+    let news = await db.collection('news').findOne({ _id: id });
+    
+    // If not found, try with ObjectId
+    if (!news) {
+      try {
+        news = await db.collection('news').findOne({ _id: /^[0-9a-fA-F]{24}$/.test(id) ? new ObjectId(id) : id });
+      } catch (error) {
+        console.error('Error converting to ObjectId:', error);
+      }
+    }
 
     if (!news) return notFound();
+    
+    // Convert ObjectId to string for client-side
+    const newsData = {
+      ...news,
+      _id: news._id.toString(),
+      createdAt: news.createdAt.toISOString()
+    };
     
     return (
       <div className="flex flex-col w-full">
@@ -76,7 +96,7 @@ export default async function NewsPage({ params }) {
             </div>
           </div>
           
-          <NewsDetail news={news} />
+          <NewsDetail news={newsData} />
         </section>
         <Footer />
       </div>

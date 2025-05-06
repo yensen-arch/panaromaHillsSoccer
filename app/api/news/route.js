@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
-import { verifyToken } from '@/lib/auth';
+import { verifyToken } from '@/lib/auth-server';
+import { ObjectId } from 'mongodb';
 
 // Helper function to verify admin token
 async function verifyAdminToken(request) {
@@ -20,7 +21,13 @@ export async function GET() {
     const db = client.db();
     const news = await db.collection('news').find({}).sort({ createdAt: -1 }).toArray();
     
-    return NextResponse.json(news);
+    // Convert ObjectIds to strings
+    const formattedNews = news.map(item => ({
+      ...item,
+      _id: item._id.toString()
+    }));
+    
+    return NextResponse.json(formattedNews);
   } catch (error) {
     console.error('Error fetching news:', error);
     return NextResponse.json(
@@ -65,7 +72,10 @@ export async function POST(request) {
     
     return NextResponse.json({
       success: true,
-      news: { ...newsItem, _id: result.insertedId }
+      news: { 
+        ...newsItem, 
+        _id: result.insertedId.toString() 
+      }
     });
   } catch (error) {
     console.error('Error creating news:', error);
@@ -101,7 +111,7 @@ export async function PUT(request) {
     const db = client.db();
     
     const result = await db.collection('news').updateOne(
-      { _id },
+      { _id: new ObjectId(_id) },
       { 
         $set: { 
           title,
@@ -157,7 +167,7 @@ export async function DELETE(request) {
     const client = await clientPromise;
     const db = client.db();
     
-    const result = await db.collection('news').deleteOne({ _id: id });
+    const result = await db.collection('news').deleteOne({ _id: new ObjectId(id) });
 
     if (result.deletedCount === 0) {
       return NextResponse.json(
