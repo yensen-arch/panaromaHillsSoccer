@@ -105,13 +105,34 @@ export default function AdminDashboard() {
     }
 
     try {
+      const isAuthenticated = await checkAuth();
+      if (!isAuthenticated) {
+        toast({
+          title: "Error",
+          description: "You are not authorized. Please log in again.",
+          variant: "destructive",
+        });
+        router.push('/admin/login');
+        return;
+      }
+
       const response = await fetch(`/api/news?id=${id}`, {
         method: 'DELETE',
+        credentials: 'include'
       });
 
       const data = await response.json();
       
       if (!response.ok) {
+        if (response.status === 401) {
+          toast({
+            title: "Unauthorized",
+            description: "Your session has expired. Please log in again.",
+            variant: "destructive",
+          });
+          router.push('/admin/login');
+          return;
+        }
         throw new Error(data.error || 'Failed to delete news');
       }
 
@@ -135,24 +156,44 @@ export default function AdminDashboard() {
     e.preventDefault();
 
     try {
-      const url = isEditing ? '/api/news' : '/api/news';
+      const isAuthenticated = await checkAuth();
+      if (!isAuthenticated) {
+        toast({
+          title: "Error",
+          description: "You are not authorized. Please log in again.",
+          variant: "destructive",
+        });
+        router.push('/admin/login');
+        return;
+      }
+
+      const url = '/api/news';
       const method = isEditing ? 'PUT' : 'POST';
       
       const response = await fetch(url, {
         method,
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify(isEditing ? {
           _id: currentNewsId,
           ...newsFormData
         } : newsFormData),
+        credentials: 'include' // This ensures cookies are sent with the request
       });
 
       const data = await response.json();
       
       if (!response.ok) {
+        if (response.status === 401) {
+          toast({
+            title: "Unauthorized",
+            description: "Your session has expired. Please log in again.",
+            variant: "destructive",
+          });
+          router.push('/admin/login');
+          return;
+        }
         throw new Error(data.error || 'Failed to save news');
       }
 
@@ -219,8 +260,15 @@ export default function AdminDashboard() {
       </div>
       
       <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200">
+        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
           <h2 className="text-xl font-semibold text-gray-900">Recent News</h2>
+          <button
+            onClick={handleAddNews}
+            className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 flex items-center"
+          >
+            <Plus className="mr-2 h-5 w-5" />
+            Add News
+          </button>
         </div>
         <div className="p-6">
           <div className="space-y-4">
@@ -241,7 +289,10 @@ export default function AdminDashboard() {
                 </div>
                 <div className="flex space-x-2">
                   <button 
-                    onClick={() => handleEditNews(item)}
+                    onClick={() => {
+                      handleEditNews(item);
+                      setActiveTab('news');
+                    }}
                     className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
                   >
                     <Edit className="h-4 w-4" />

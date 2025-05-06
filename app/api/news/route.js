@@ -5,7 +5,9 @@ import { ObjectId } from 'mongodb';
 
 // Helper function to verify admin token
 async function verifyAdminToken(request) {
-  const token = request.headers.get('authorization')?.split(' ')[1];
+  const cookies = request.cookies;
+  const token = cookies.get('token')?.value;
+  
   if (!token) {
     return false;
   }
