@@ -4,6 +4,7 @@ import { MapPin, Phone, Mail, Clock } from 'lucide-react';
 import { useEffect } from 'react';
 import { Navbar } from '@/components/ui/navbar';
 import { Footer } from '@/components/ui/footer';
+import Image from 'next/image';
 
 export default function LocationPage() {
   useEffect(() => {
@@ -140,14 +141,23 @@ export default function LocationPage() {
   return (
     <div className="flex flex-col w-full">
       <Navbar />
-      <div className="bg-primary-800 text-white py-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Find Us</h1>
-          <p className="text-xl max-w-2xl mx-auto">
-            Visit our facilities and join us for matches and training sessions
-          </p>
-        </div>
-      </div>
+      <div className="relative bg-primary-800 text-white py-20 overflow-hidden">
+  <div className="absolute inset-0 z-0">
+    <Image
+      src="https://res.cloudinary.com/dqh2tacov/image/upload/v1746527286/texture-grass-field_1232-251_vbf97q.webp"
+      alt="Grass Background"
+      fill
+      className="object-cover opacity-30"
+    />
+  </div>
+  <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 className="text-4xl md:text-5xl font-bold mb-4">Find Us</h1>
+    <p className="text-xl max-w-2xl mx-auto">
+      Visit our facilities and join us for matches and training sessions
+    </p>
+  </div>
+</div>
+
 
       <section className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid md:grid-cols-2 gap-12">
@@ -161,10 +171,10 @@ export default function LocationPage() {
                 <div>
                   <h3 className="font-semibold text-lg mb-1">Address</h3>
                   <p className="text-gray-700">
-                    123 Football Lane<br />
-                    Green Valley<br />
-                    London, SW1A 1AA<br />
-                    United Kingdom
+                    Panamount Soccer Field<br />
+                    Panamount Blvd NW<br />
+                    Calgary, AB T3K 0J1<br />
+                    Canada
                   </p>
                 </div>
               </div>
@@ -226,19 +236,15 @@ export default function LocationPage() {
           
           <div>
             <div className="bg-gray-300 rounded-lg shadow-md overflow-hidden h-[500px] relative">
-              {/* This would normally show the Google Map */}
-              <div id="map" className="w-full h-full relative">
-                {/* Placeholder for map - in a real app, this would show Google Maps */}
-                <div className="absolute inset-0 flex items-center justify-center bg-gray-200">
-                  <div className="text-center p-4">
-                    <p className="text-gray-700 mb-2">Google Map would appear here</p>
-                    <p className="text-sm text-gray-500">
-                      Panaroma Hills Soccer Club<br />
-                      123 Football Lane, London
-                    </p>
-                  </div>
-                </div>
-              </div>
+              <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2507.915289399681!2d-114.09594902345654!3d51.16093217178967!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x537166571536a901%3A0x82795d0ecfea372e!2sPanamount%20Soccer%20Field!5e0!3m2!1sen!2sca!4v1710864000000!5m2!1sen!2sca"
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen=""
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              ></iframe>
             </div>
             
             <div className="mt-8 p-6 bg-primary-50 rounded-lg border border-primary-100">
@@ -261,12 +267,6 @@ export default function LocationPage() {
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                   <span>Training area with equipment</span>
-                </li>
-                <li className="flex items-center">
-                  <svg className="w-5 h-5 text-primary-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                  </svg>
-                  <span>Modern changing rooms and showers</span>
                 </li>
                 <li className="flex items-center">
                   <svg className="w-5 h-5 text-primary-600 mr-2" fill="currentColor" viewBox="0 0 20 20">

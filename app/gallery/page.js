@@ -87,14 +87,23 @@ export default function GalleryPage() {
   return (
     <div className="flex flex-col w-full">
       <Navbar />
-      <div className="bg-primary-800 text-white py-20">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">Photo Gallery</h1>
-          <p className="text-xl max-w-2xl mx-auto">
-            Capturing moments from our matches, events, and community activities
-          </p>
-        </div>
-      </div>
+      <div className="relative bg-primary-800 text-white py-20 overflow-hidden">
+  <div className="absolute inset-0 z-0">
+    <Image
+      src="https://res.cloudinary.com/dqh2tacov/image/upload/v1746527286/texture-grass-field_1232-251_vbf97q.webp"
+      alt="Gallery"
+      fill
+      className="object-cover opacity-30"
+    />
+  </div>
+  <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 className="text-4xl md:text-5xl font-bold mb-4">Photo Gallery</h1>
+    <p className="text-xl max-w-2xl mx-auto">
+      Capturing moments from our matches, events, and community activities
+    </p>
+  </div>
+</div>
+
 
       <section className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
