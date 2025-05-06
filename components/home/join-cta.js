@@ -1,9 +1,18 @@
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function JoinCTA() {
   return (
-    <section className="bg-primary-700 text-white py-20">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <section className="relative bg-primary-700 text-white py-60 overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <Image
+          src="https://res.cloudinary.com/dqh2tacov/image/upload/v1746526695/soccer-7392844_1280_pht9ag.jpg"
+          alt="Join CTA"
+          fill
+          className="object-cover opacity-40"
+        />
+      </div>
+      <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Join Our Club?</h2>
         <p className="text-xl max-w-2xl mx-auto mb-8">
           Become part of Panaroma Hills Soccer Club today and experience the passion, community, and excitement of football with us.
