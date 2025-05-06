@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Cog, Lock, User } from 'lucide-react';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AdminLoginPage() {
   const [email, setEmail] = useState('');
@@ -10,6 +11,7 @@ export default function AdminLoginPage() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { toast } = useToast();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,27 +25,34 @@ export default function AdminLoginPage() {
     setError('');
     
     try {
-      // Normally this would communicate with an API
-      // const response = await fetch('/api/admin/login', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({ email, password }),
-      // });
+      const response = await fetch('/api/admin/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
       
-      // Mock login for demonstration
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const data = await response.json();
       
-      // If admin@example.com/password, "successful login"
-      if (email === 'admin@example.com' && password === 'password') {
-        // In a real app, this would store the JWT token received from the backend
-        localStorage.setItem('adminToken', 'demo-token');
-        router.push('/admin/dashboard');
-      } else {
-        setError('Invalid email or password');
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
       }
+
+      // Store the token
+      localStorage.setItem('adminToken', data.token);
+      
+      toast({
+        title: "Success",
+        description: "Login successful! Redirecting to dashboard...",
+      });
+
+      router.push('/admin/dashboard');
     } catch (err) {
-      setError('An error occurred. Please try again.');
-      console.error(err);
+      setError(err.message || 'An error occurred. Please try again.');
+      toast({
+        title: "Error",
+        description: err.message || 'An error occurred. Please try again.',
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }

@@ -7,14 +7,13 @@ import {
   Newspaper,
   Users,
   Calendar,
-  Settings,
   LogOut,
   Plus,
   Trash,
   Edit,
   FileText
 } from 'lucide-react';
-import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
 
 export default function AdminDashboard() {
   const [isClient, setIsClient] = useState(false);
@@ -29,8 +28,9 @@ export default function AdminDashboard() {
   const [currentNewsId, setCurrentNewsId] = useState(null);
   const [newsItems, setNewsItems] = useState([]);
   const router = useRouter();
+  const { toast } = useToast();
 
-  // Initialize with mock data
+  // Initialize with real data
   useEffect(() => {
     setIsClient(true);
     
@@ -41,31 +41,25 @@ export default function AdminDashboard() {
       return;
     }
     
-    // Mock news data
-    setNewsItems([
-      {
-        _id: '1',
-        title: 'Summer Training Camp Announced',
-        content: 'Join us for our annual summer training camp. Open to all age groups, this intensive week-long camp focuses on skill development, tactical understanding, and fitness.',
-        imageUrl: 'https://images.pexels.com/photos/3459979/pexels-photo-3459979.jpeg',
-        createdAt: new Date('2023-06-15').toISOString()
-      },
-      {
-        _id: '2',
-        title: 'Team Wins Regional Championship',
-        content: 'Congratulations to our senior team for winning the regional championship! After a nail-biting final match that went to penalties, our team emerged victorious.',
-        imageUrl: 'https://images.pexels.com/photos/3076509/pexels-photo-3076509.jpeg',
-        createdAt: new Date('2023-06-05').toISOString()
-      },
-      {
-        _id: '3',
-        title: 'New Youth Coach Joins the Club',
-        content: 'We\'re excited to welcome James Thompson to our coaching staff. James brings 15 years of experience working with youth players and will lead our U14 team.',
-        imageUrl: 'https://images.pexels.com/photos/8224721/pexels-photo-8224721.jpeg',
-        createdAt: new Date('2023-05-28').toISOString()
-      }
-    ]);
+    // Fetch news data
+    fetchNews();
   }, [router]);
+
+  const fetchNews = async () => {
+    try {
+      const response = await fetch('/api/news');
+      if (!response.ok) throw new Error('Failed to fetch news');
+      const data = await response.json();
+      setNewsItems(data);
+    } catch (error) {
+      console.error('Error fetching news:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch news",
+        variant: "destructive",
+      });
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('adminToken');
@@ -102,39 +96,89 @@ export default function AdminDashboard() {
     setShowNewsForm(true);
   };
 
-  const handleDeleteNews = (id) => {
-    // In a real app, you would call an API to delete the news
-    // For this demo, just filter the news array
-    const updatedNews = newsItems.filter(item => item._id !== id);
-    setNewsItems(updatedNews);
+  const handleDeleteNews = async (id) => {
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      router.push('/admin/login');
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/news?id=${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to delete news');
+      }
+
+      toast({
+        title: "Success",
+        description: "News deleted successfully",
+      });
+
+      fetchNews(); // Refresh the news list
+    } catch (error) {
+      console.error('Error deleting news:', error);
+      toast({
+        title: "Error",
+        description: error.message || 'Failed to delete news',
+        variant: "destructive",
+      });
+    }
   };
 
-  const handleSubmitNews = (e) => {
+  const handleSubmitNews = async (e) => {
     e.preventDefault();
     
-    if (isEditing) {
-      // Update existing news
-      const updatedNews = newsItems.map(item => {
-        if (item._id === currentNewsId) {
-          return {
-            ...item,
-            ...newsFormData
-          };
-        }
-        return item;
-      });
-      setNewsItems(updatedNews);
-    } else {
-      // Add new news
-      const newNewsItem = {
-        _id: Date.now().toString(),
-        ...newsFormData,
-        createdAt: new Date().toISOString()
-      };
-      setNewsItems([newNewsItem, ...newsItems]);
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+      router.push('/admin/login');
+      return;
     }
-    
-    setShowNewsForm(false);
+
+    try {
+      const url = isEditing ? '/api/news' : '/api/news';
+      const method = isEditing ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(isEditing ? {
+          _id: currentNewsId,
+          ...newsFormData
+        } : newsFormData),
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to save news');
+      }
+
+      toast({
+        title: "Success",
+        description: isEditing ? "News updated successfully" : "News created successfully",
+      });
+
+      setShowNewsForm(false);
+      fetchNews(); // Refresh the news list
+    } catch (error) {
+      console.error('Error saving news:', error);
+      toast({
+        title: "Error",
+        description: error.message || 'Failed to save news',
+        variant: "destructive",
+      });
+    }
   };
 
   // Render loading state or redirect if not on client yet
@@ -385,7 +429,7 @@ export default function AdminDashboard() {
       {/* Sidebar */}
       <div className="hidden md:flex md:flex-col md:w-64 md:fixed md:inset-y-0 bg-primary-800 text-white">
         <div className="flex items-center justify-center h-16 border-b border-primary-700">
-          <div className="text-lg font-bold">Panaroma Hills Soccer Club Admin</div>
+          <div className="text-lg font-bold">Admin</div>
         </div>
         <div className="flex-1 flex flex-col overflow-y-auto pt-5 pb-4">
           <nav className="mt-5 flex-1 px-2 space-y-1">
@@ -433,17 +477,7 @@ export default function AdminDashboard() {
               <Calendar className="mr-3 h-5 w-5" />
               Events
             </button>
-            <button
-              onClick={() => setActiveTab('settings')}
-              className={`flex items-center px-4 py-2 text-sm font-medium rounded-md w-full ${
-                activeTab === 'settings' 
-                  ? 'bg-primary-700 text-white' 
-                  : 'text-primary-100 hover:bg-primary-700'
-              }`}
-            >
-              <Settings className="mr-3 h-5 w-5" />
-              Settings
-            </button>
+            
           </nav>
         </div>
         <div className="border-t border-primary-700 p-4">
@@ -460,7 +494,7 @@ export default function AdminDashboard() {
       {/* Mobile header */}
       <div className="md:hidden bg-primary-800 text-white p-4 w-full fixed top-0 z-10">
         <div className="flex justify-between items-center">
-          <div className="text-lg font-bold">Panaroma Hills Soccer Club Admin</div>
+          <div className="text-lg font-bold"> Admin</div>
           <button
             onClick={handleLogout}
             className="flex items-center text-primary-100 hover:text-white"
@@ -508,15 +542,6 @@ export default function AdminDashboard() {
           >
             <Calendar className="h-5 w-5" />
             <span className="text-xs mt-1">Events</span>
-          </button>
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`flex flex-col items-center py-2 ${
-              activeTab === 'settings' ? 'text-white' : 'text-primary-100'
-            }`}
-          >
-            <Settings className="h-5 w-5" />
-            <span className="text-xs mt-1">Settings</span>
           </button>
         </div>
       </div>
