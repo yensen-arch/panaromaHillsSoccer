@@ -185,11 +185,11 @@ export default function RegisterPage() {
   };
 
   const renderStep1 = () => (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Personal Information</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
             First Name *
           </label>
           <input
@@ -198,14 +198,16 @@ export default function RegisterPage() {
             name="firstName"
             value={formData.firstName}
             onChange={handleChange}
-            className={`w-full p-3 border rounded-md ${errors.firstName ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+              errors.firstName ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter your first name"
           />
-          {errors.firstName && <p className="mt-1 text-sm text-red-600">{errors.firstName}</p>}
-          
+          {errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
         </div>
         
-        <div>
-          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
             Last Name *
           </label>
           <input
@@ -214,16 +216,18 @@ export default function RegisterPage() {
             name="lastName"
             value={formData.lastName}
             onChange={handleChange}
-            className={`w-full p-3 border rounded-md ${errors.lastName ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+              errors.lastName ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter your last name"
           />
-          {errors.lastName && <p className="mt-1 text-sm text-red-600">{errors.lastName}</p>}
-          
+          {errors.lastName && <p className="text-sm text-red-600">{errors.lastName}</p>}
         </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">
             Email Address *
           </label>
           <input
@@ -232,13 +236,16 @@ export default function RegisterPage() {
             name="email"
             value={formData.email}
             onChange={handleChange}
-            className={`w-full p-3 border rounded-md ${errors.email ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+              errors.email ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter your email"
           />
-          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email}</p>}
+          {errors.email && <p className="text-sm text-red-600">{errors.email}</p>}
         </div>
         
-        <div>
-          <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
             Phone Number *
           </label>
           <input
@@ -247,15 +254,18 @@ export default function RegisterPage() {
             name="phone"
             value={formData.phone}
             onChange={handleChange}
-            className={`w-full p-3 border rounded-md ${errors.phone ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+              errors.phone ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter your phone number"
           />
-          {errors.phone && <p className="mt-1 text-sm text-red-600">{errors.phone}</p>}
+          {errors.phone && <p className="text-sm text-red-600">{errors.phone}</p>}
         </div>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="dateOfBirth" className="block text-sm font-medium text-gray-700">
             Date of Birth *
           </label>
           <input
@@ -264,13 +274,15 @@ export default function RegisterPage() {
             name="dateOfBirth"
             value={formData.dateOfBirth}
             onChange={handleChange}
-            className={`w-full p-3 border rounded-md ${errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+              errors.dateOfBirth ? 'border-red-500' : 'border-gray-300'
+            }`}
           />
-          {errors.dateOfBirth && <p className="mt-1 text-sm text-red-600">{errors.dateOfBirth}</p>}
+          {errors.dateOfBirth && <p className="text-sm text-red-600">{errors.dateOfBirth}</p>}
         </div>
         
-        <div>
-          <label htmlFor="gender" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="gender" className="block text-sm font-medium text-gray-700">
             Gender *
           </label>
           <select
@@ -278,13 +290,15 @@ export default function RegisterPage() {
             name="gender"
             value={formData.gender}
             onChange={handleChange}
-            className={`w-full p-3 border rounded-md ${errors.gender ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+              errors.gender ? 'border-red-500' : 'border-gray-300'
+            }`}
           >
             <option value="">Select Gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
-             </select>
-          {errors.gender && <p className="mt-1 text-sm text-red-600">{errors.gender}</p>}
+          </select>
+          {errors.gender && <p className="text-sm text-red-600">{errors.gender}</p>}
         </div>
       </div>
       
@@ -292,20 +306,21 @@ export default function RegisterPage() {
         <button
           type="button"
           onClick={nextStep}
-          className="px-6 py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-300 flex items-center"
+          className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-300 flex items-center transform hover:scale-105"
         >
           Next Step <ArrowRight className="ml-2 h-5 w-5" />
         </button>
       </div>
     </div>
   );
+
   const renderStep2 = () => (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Additional Information</h2>
       
       <div className="space-y-6">
-        <div>
-          <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="address" className="block text-sm font-medium text-gray-700">
             Address *
           </label>
           <input
@@ -314,14 +329,17 @@ export default function RegisterPage() {
             name="address"
             value={formData.address}
             onChange={handleChange}
-            className={`w-full p-3 border rounded-md ${errors.address ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+              errors.address ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter your address"
           />
-          {errors.address && <p className="mt-1 text-sm text-red-600">{errors.address}</p>}
+          {errors.address && <p className="text-sm text-red-600">{errors.address}</p>}
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label htmlFor="city" className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="space-y-2">
+            <label htmlFor="city" className="block text-sm font-medium text-gray-700">
               City *
             </label>
             <input
@@ -330,13 +348,16 @@ export default function RegisterPage() {
               name="city"
               value={formData.city}
               onChange={handleChange}
-              className={`w-full p-3 border rounded-md ${errors.city ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+                errors.city ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="Enter your city"
             />
-            {errors.city && <p className="mt-1 text-sm text-red-600">{errors.city}</p>}
+            {errors.city && <p className="text-sm text-red-600">{errors.city}</p>}
           </div>
           
-          <div>
-            <label htmlFor="postcode" className="block text-sm font-medium text-gray-700 mb-1">
+          <div className="space-y-2">
+            <label htmlFor="postcode" className="block text-sm font-medium text-gray-700">
               Postcode *
             </label>
             <input
@@ -345,15 +366,18 @@ export default function RegisterPage() {
               name="postcode"
               value={formData.postcode}
               onChange={handleChange}
-              className={`w-full p-3 border rounded-md ${errors.postcode ? 'border-red-500' : 'border-gray-300'}`}
+              className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+                errors.postcode ? 'border-red-500' : 'border-gray-300'
+              }`}
+              placeholder="Enter your postcode"
             />
-            {errors.postcode && <p className="mt-1 text-sm text-red-600">{errors.postcode}</p>}
+            {errors.postcode && <p className="text-sm text-red-600">{errors.postcode}</p>}
           </div>
         </div>
       </div>
       
-      <div>
-        <label htmlFor="experience" className="block text-sm font-medium text-gray-700 mb-1">
+      <div className="space-y-2">
+        <label htmlFor="experience" className="block text-sm font-medium text-gray-700">
           Football Experience
         </label>
         <textarea
@@ -363,13 +387,13 @@ export default function RegisterPage() {
           value={formData.experience}
           onChange={handleChange}
           placeholder="Tell us about your football experience (level played, positions, etc.)"
-          className="w-full p-3 border border-gray-300 rounded-md"
+          className="w-full p-3 border border-gray-300 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
         ></textarea>
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div>
-          <label htmlFor="emergencyContact" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="emergencyContact" className="block text-sm font-medium text-gray-700">
             Emergency Contact Name *
           </label>
           <input
@@ -378,13 +402,16 @@ export default function RegisterPage() {
             name="emergencyContact"
             value={formData.emergencyContact}
             onChange={handleChange}
-            className={`w-full p-3 border rounded-md ${errors.emergencyContact ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+              errors.emergencyContact ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter emergency contact name"
           />
-          {errors.emergencyContact && <p className="mt-1 text-sm text-red-600">{errors.emergencyContact}</p>}
+          {errors.emergencyContact && <p className="text-sm text-red-600">{errors.emergencyContact}</p>}
         </div>
         
-        <div>
-          <label htmlFor="emergencyPhone" className="block text-sm font-medium text-gray-700 mb-1">
+        <div className="space-y-2">
+          <label htmlFor="emergencyPhone" className="block text-sm font-medium text-gray-700">
             Emergency Contact Phone *
           </label>
           <input
@@ -393,14 +420,17 @@ export default function RegisterPage() {
             name="emergencyPhone"
             value={formData.emergencyPhone}
             onChange={handleChange}
-            className={`w-full p-3 border rounded-md ${errors.emergencyPhone ? 'border-red-500' : 'border-gray-300'}`}
+            className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+              errors.emergencyPhone ? 'border-red-500' : 'border-gray-300'
+            }`}
+            placeholder="Enter emergency contact phone"
           />
-          {errors.emergencyPhone && <p className="mt-1 text-sm text-red-600">{errors.emergencyPhone}</p>}
+          {errors.emergencyPhone && <p className="text-sm text-red-600">{errors.emergencyPhone}</p>}
         </div>
       </div>
       
-      <div>
-        <label htmlFor="medicalConditions" className="block text-sm font-medium text-gray-700 mb-1">
+      <div className="space-y-2">
+        <label htmlFor="medicalConditions" className="block text-sm font-medium text-gray-700">
           Medical Conditions or Allergies
         </label>
         <textarea
@@ -410,7 +440,7 @@ export default function RegisterPage() {
           value={formData.medicalConditions}
           onChange={handleChange}
           placeholder="Please list any medical conditions or allergies we should be aware of"
-          className="w-full p-3 border border-gray-300 rounded-md"
+          className="w-full p-3 border border-gray-300 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
         ></textarea>
       </div>
       
@@ -418,14 +448,14 @@ export default function RegisterPage() {
         <button
           type="button"
           onClick={prevStep}
-          className="px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-300"
+          className="px-6 py-3 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300"
         >
           Previous
         </button>
         <button
           type="button"
           onClick={nextStep}
-          className="px-6 py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-300 flex items-center"
+          className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-300 flex items-center transform hover:scale-105"
         >
           Next Step <ArrowRight className="ml-2 h-5 w-5" />
         </button>
@@ -434,14 +464,14 @@ export default function RegisterPage() {
   );
 
   const renderStep3 = () => (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <h2 className="text-2xl font-bold text-gray-900 mb-6">Membership & Payment</h2>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {membershipOptions.map((option) => (
           <div 
             key={option.id}
-            className={`border rounded-lg overflow-hidden transition-all duration-300 ${
+            className={`border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg ${
               formData.membershipType === option.id
                 ? 'border-primary-500 shadow-lg transform -translate-y-1'
                 : 'border-gray-200 hover:border-primary-300'
@@ -455,7 +485,7 @@ export default function RegisterPage() {
                 )}
               </div>
               <p className="text-2xl font-bold text-primary-600 mb-4">{option.price}</p>
-              <ul className="space-y-2">
+              <ul className="space-y-3">
                 {option.features.map((feature, index) => (
                   <li key={index} className="flex items-start">
                     <CheckCircle className="h-5 w-5 text-primary-500 mr-2 flex-shrink-0 mt-0.5" />
@@ -472,7 +502,7 @@ export default function RegisterPage() {
                       membershipType: option.id
                     });
                   }}
-                  className={`w-full py-2 rounded-md transition-colors duration-300 ${
+                  className={`w-full py-3 rounded-lg transition-all duration-300 ${
                     formData.membershipType === option.id
                       ? 'bg-primary-600 text-white'
                       : 'bg-white text-primary-600 border border-primary-600 hover:bg-primary-50'
@@ -486,9 +516,9 @@ export default function RegisterPage() {
         ))}
       </div>
       
-      <div className="mt-8 p-6 bg-gray-50 rounded-lg border border-gray-200">
+      <div className="mt-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Terms and Conditions</h3>
-        <div className="h-40 overflow-y-auto p-4 bg-white border border-gray-200 rounded-md mb-4 text-sm text-gray-700">
+        <div className="h-40 overflow-y-auto p-4 bg-white border border-gray-200 rounded-lg mb-4 text-sm text-gray-700">
           <p className="mb-2">By registering with Panaroma Hills Soccer Club, you agree to the following terms and conditions:</p>
           <ol className="list-decimal pl-5 space-y-2">
             <li>Membership is valid for one year from the date of registration.</li>
@@ -510,7 +540,7 @@ export default function RegisterPage() {
             name="agreeTerms"
             checked={formData.agreeTerms}
             onChange={handleChange}
-            className="mt-1 mr-2"
+            className="mt-1 mr-2 h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
           />
           <label htmlFor="agreeTerms" className="text-gray-700">
             I have read and agree to the terms and conditions *
@@ -523,14 +553,14 @@ export default function RegisterPage() {
         <button
           type="button"
           onClick={prevStep}
-          className="px-6 py-3 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-300"
+          className="px-6 py-3 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all duration-300"
         >
           Previous
         </button>
         <button
           type="submit"
           disabled={isLoading}
-          className="px-6 py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-300 flex items-center disabled:opacity-70 disabled:cursor-not-allowed"
+          className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-300 flex items-center transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
           {isLoading ? (
             <>
@@ -549,16 +579,16 @@ export default function RegisterPage() {
   );
 
   const renderPaymentStatus = () => (
-    <div className="text-center">
+    <div className="text-center max-w-2xl mx-auto">
       {paymentStatus === 'success' ? (
-        <div className="p-8 bg-green-50 rounded-lg border border-green-200">
+        <div className="p-8 bg-white rounded-2xl shadow-xl border border-green-200">
           <div className="mb-6 flex justify-center">
-            <div className="rounded-full bg-green-100 p-3">
-              <CheckCircle className="h-12 w-12 text-green-600" />
+            <div className="rounded-full bg-green-100 p-4">
+              <CheckCircle className="h-16 w-16 text-green-600" />
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Registration Successful!</h2>
-          <p className="text-lg text-gray-700 mb-6">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Registration Successful!</h2>
+          <p className="text-xl text-gray-700 mb-6">
             Thank you for registering with Panaroma Hills Soccer Club. We're excited to welcome you to our club!
           </p>
           <p className="text-gray-700 mb-8">
@@ -566,25 +596,25 @@ export default function RegisterPage() {
           </p>
           <Link
             href="/"
-            className="px-6 py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-300 inline-block"
+            className="inline-block px-8 py-4 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105"
           >
             Return to Homepage
           </Link>
         </div>
       ) : (
-        <div className="p-8 bg-red-50 rounded-lg border border-red-200">
+        <div className="p-8 bg-white rounded-2xl shadow-xl border border-red-200">
           <div className="mb-6 flex justify-center">
-            <div className="rounded-full bg-red-100 p-3">
-              <AlertCircle className="h-12 w-12 text-red-600" />
+            <div className="rounded-full bg-red-100 p-4">
+              <AlertCircle className="h-16 w-16 text-red-600" />
             </div>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Payment Failed</h2>
-          <p className="text-lg text-gray-700 mb-6">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Payment Failed</h2>
+          <p className="text-xl text-gray-700 mb-6">
             There was an issue processing your payment. Please try again or contact support.
           </p>
           <button
             onClick={() => setPaymentStatus(null)}
-            className="px-6 py-3 bg-primary-600 text-white rounded-md hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors duration-300"
+            className="inline-block px-8 py-4 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-300 transform hover:scale-105"
           >
             Try Again
           </button>
@@ -594,24 +624,24 @@ export default function RegisterPage() {
   );
 
   return (
-    <div className="flex flex-col w-full">
-      <div className="relative bg-primary-800 text-white py-20 overflow-hidden">
-  <div className="absolute inset-0 z-0">
-    <Image
-      src="https://res.cloudinary.com/dqh2tacov/image/upload/v1746527286/texture-grass-field_1232-251_vbf97q.webp"
-      alt="Grass Background"
-      fill
-      className="object-cover opacity-30"
-    />
-  </div>
-  <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h1 className="text-4xl md:text-5xl font-bold mb-4">Join Panaroma Hills Soccer Club</h1>
-    <p className="text-xl max-w-2xl mx-auto">
-      Become a member of our football community today
-    </p>
-  </div>
-</div>
-
+    <div className="flex flex-col w-full min-h-screen bg-gray-50">
+      <div className="relative bg-primary-800 text-white py-24 overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <Image
+            src="https://res.cloudinary.com/dqh2tacov/image/upload/v1746527286/texture-grass-field_1232-251_vbf97q.webp"
+            alt="Grass Background"
+            fill
+            className="object-cover opacity-20"
+            priority
+          />
+        </div>
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 tracking-tight">Join Panaroma Hills Soccer Club</h1>
+          <p className="text-xl max-w-2xl mx-auto text-primary-100">
+            Become a member of our football community today
+          </p>
+        </div>
+      </div>
 
       <section className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         {!paymentStatus ? (
@@ -620,11 +650,11 @@ export default function RegisterPage() {
               <div className="flex items-center justify-center">
                 <div className="relative flex w-full max-w-3xl justify-between">
                   {[1, 2, 3].map((stepNumber) => (
-                    <div key={stepNumber} className="relative flex flex-col items-center">
+                    <div key={stepNumber} className="relative flex flex-col items-center w-1/3">
                       <div 
-                        className={`flex h-10 w-10 items-center justify-center rounded-full ${
-                          stepNumber < step ? 'bg-primary-600' : 
-                          stepNumber === step ? 'bg-primary-600' : 'bg-gray-300'
+                        className={`flex h-12 w-12 items-center justify-center rounded-full transition-all duration-300 z-10 ${
+                          stepNumber < step ? 'bg-primary-600 scale-110' : 
+                          stepNumber === step ? 'bg-primary-600 ring-4 ring-primary-200' : 'bg-gray-200'
                         } text-white font-bold`}
                       >
                         {stepNumber < step ? (
@@ -633,18 +663,11 @@ export default function RegisterPage() {
                           stepNumber
                         )}
                       </div>
-                      <div className="mt-2 text-sm font-medium">
+                      <div className="mt-3 text-sm font-medium text-gray-600 text-center">
                         {stepNumber === 1 && 'Personal Info'}
                         {stepNumber === 2 && 'Additional Info'}
                         {stepNumber === 3 && 'Membership & Payment'}
                       </div>
-                      {stepNumber < 3 && (
-                        <div 
-                          className={`absolute top-5 -right-1/2 h-0.5 w-full ${
-                            stepNumber < step ? 'bg-primary-600' : 'bg-gray-300'
-                          }`}
-                        ></div>
-                      )}
                     </div>
                   ))}
                 </div>
@@ -652,7 +675,7 @@ export default function RegisterPage() {
             </div>
             
             <div className="max-w-3xl mx-auto">
-              <form onSubmit={handleSubmit}>
+              <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-xl p-6 sm:p-8">
                 {step === 1 && renderStep1()}
                 {step === 2 && renderStep2()}
                 {step === 3 && renderStep3()}
