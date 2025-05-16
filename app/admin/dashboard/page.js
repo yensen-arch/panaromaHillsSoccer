@@ -35,6 +35,7 @@ export default function AdminDashboard() {
   const [contactQueries, setContactQueries] = useState([]);
   const [selectedQuery, setSelectedQuery] = useState(null);
   const [showQueryModal, setShowQueryModal] = useState(false);
+  const [registrations, setRegistrations] = useState([]);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -51,6 +52,7 @@ export default function AdminDashboard() {
       }
       fetchNews();
       fetchContactQueries();
+      fetchRegistrations();
     };
     
     checkAuthentication();
@@ -84,6 +86,21 @@ export default function AdminDashboard() {
         title: "Error",
         description: "Failed to fetch contact queries",
         variant: "destructive",
+      });
+    }
+  };
+
+  const fetchRegistrations = async () => {
+    try {
+      const response = await fetch('/api/registration');
+      if (!response.ok) throw new Error('Failed to fetch registrations');
+      const data = await response.json();
+      setRegistrations(data);
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch registrations',
+        variant: 'destructive',
       });
     }
   };
@@ -280,6 +297,21 @@ export default function AdminDashboard() {
         description: "Failed to update query status",
         variant: "destructive",
       });
+    }
+  };
+
+  const handleTogglePaid = async (id, currentStatus) => {
+    try {
+      const response = await fetch(`/api/registration`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ _id: id, paymentStatus: currentStatus === 'paid' ? 'unpaid' : 'paid' })
+      });
+      if (!response.ok) throw new Error('Failed to update payment status');
+      fetchRegistrations();
+      toast({ title: 'Success', description: 'Payment status updated.' });
+    } catch (error) {
+      toast({ title: 'Error', description: 'Failed to update payment status', variant: 'destructive' });
     }
   };
 
@@ -705,6 +737,48 @@ export default function AdminDashboard() {
     );
   };
 
+  const renderRegistrationsContent = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Registrations</h2>
+      </div>
+      <div className="bg-white rounded-lg shadow overflow-x-auto">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Membership</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Liability</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Toggle Paid</th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {registrations.map((reg) => (
+              <tr key={reg._id}>
+                <td className="px-4 py-3 whitespace-nowrap">{reg.firstName} {reg.lastName}</td>
+                <td className="px-4 py-3 whitespace-nowrap">{reg.email}</td>
+                <td className="px-4 py-3 whitespace-nowrap">{reg.phone}</td>
+                <td className="px-4 py-3 whitespace-nowrap">{reg.membershipType}</td>
+                <td className="px-4 py-3 whitespace-nowrap">{reg.liabilityAccepted ? 'Accepted' : 'Not Accepted'}</td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${reg.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{reg.paymentStatus}</span>
+                </td>
+                <td className="px-4 py-3 whitespace-nowrap">
+                  <button onClick={() => handleTogglePaid(reg._id, reg.paymentStatus)} className="px-3 py-1 rounded bg-primary-600 text-white hover:bg-primary-700">
+                    Mark as {reg.paymentStatus === 'paid' ? 'Unpaid' : 'Paid'}
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Sidebar */}
@@ -758,6 +832,17 @@ export default function AdminDashboard() {
               <Mail className="mr-3 h-5 w-5" />
               Contact Queries
             </button>
+            <button
+              onClick={() => setActiveTab('registrations')}
+              className={`flex items-center px-4 py-2 text-sm font-medium rounded-md w-full ${
+                activeTab === 'registrations' 
+                  ? 'bg-primary-700 text-white' 
+                  : 'text-primary-100 hover:bg-primary-700'
+              }`}
+            >
+              <Users className="mr-3 h-5 w-5" />
+              Registrations
+            </button>
           </nav>
         </div>
         <div className="border-t border-primary-700 p-4">
@@ -786,7 +871,7 @@ export default function AdminDashboard() {
 
       {/* Mobile nav */}
       <div className="md:hidden bg-primary-700 text-white fixed bottom-0 w-full z-10">
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-5">
           <button
             onClick={() => setActiveTab('dashboard')}
             className={`flex flex-col items-center py-2 ${
@@ -823,6 +908,15 @@ export default function AdminDashboard() {
             <Mail className="h-5 w-5" />
             <span className="text-xs mt-1">Contact</span>
           </button>
+          <button
+            onClick={() => setActiveTab('registrations')}
+            className={`flex flex-col items-center py-2 ${
+              activeTab === 'registrations' ? 'text-white' : 'text-primary-100'
+            }`}
+          >
+            <Users className="h-5 w-5" />
+            <span className="text-xs mt-1">Registrations</span>
+          </button>
         </div>
       </div>
 
@@ -841,6 +935,7 @@ export default function AdminDashboard() {
                   <p className="text-gray-600">This feature is not implemented in the demo version.</p>
                 </div>
               )}
+              {activeTab === 'registrations' && renderRegistrationsContent()}
             </div>
           </div>
         </main>

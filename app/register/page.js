@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { loadStripe } from '@stripe/stripe-js';
 import Link from 'next/link';
 import { 
@@ -17,6 +17,7 @@ const stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY);
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
+  const [showIntroModal, setShowIntroModal] = useState(true);
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -625,6 +626,34 @@ export default function RegisterPage() {
 
   return (
     <div className="flex flex-col w-full min-h-screen bg-gray-50">
+      {/* Intro Modal */}
+      {showIntroModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-8 relative">
+            <h2 className="text-2xl font-bold mb-4 text-primary-700 text-center">Registration is a 3-stage process</h2>
+            <ol className="list-decimal pl-5 mb-4 text-gray-700 space-y-2">
+              <li><b>1st Stage:</b> Provide and submit registration information.</li>
+              <li><b>2nd Stage:</b> You must <b>ACCEPT</b> a release of liability statement.</li>
+              <li><b>3rd Stage:</b> Finally, payment must be received. Upon successful completion of the first and second stage you will be given the option to pay online. </li>
+            </ol>
+            <div className="mb-4 text-gray-700">
+            </div>
+            <div className="mb-4 text-gray-700">
+              If you choose not to pay online please contact us to make alternate arrangements for payment.<br/>
+              <b>Please note that registration is only complete upon receipt of payment.</b>
+            </div>
+            <div className="mb-4 text-gray-700 text-sm">
+              ALL PROGRAMS ARE SUBJECT TO MINIMUM NUMBER OF PLAYERS …during the program we might experience shortage of space but all sessions will be fulfilled/held
+            </div>
+            <button
+              className="w-full mt-4 px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-300"
+              onClick={() => setShowIntroModal(false)}
+            >
+              Continue
+            </button>
+          </div>
+        </div>
+      )}
       <div className="relative bg-primary-800 text-white py-24 overflow-hidden">
         <div className="absolute inset-0 z-0">
           <Image
