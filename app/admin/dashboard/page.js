@@ -12,7 +12,10 @@ import {
   Trash,
   Edit,
   FileText,
-  Mail
+  Mail,
+  X,
+  CheckCircle,
+  Clock
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { logout, checkAuth } from '@/lib/auth-client';
@@ -30,6 +33,8 @@ export default function AdminDashboard() {
   const [currentNewsId, setCurrentNewsId] = useState(null);
   const [newsItems, setNewsItems] = useState([]);
   const [contactQueries, setContactQueries] = useState([]);
+  const [selectedQuery, setSelectedQuery] = useState(null);
+  const [showQueryModal, setShowQueryModal] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -228,6 +233,51 @@ export default function AdminDashboard() {
       toast({
         title: "Error",
         description: error.message || 'Failed to save news',
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleQueryClick = (query) => {
+    setSelectedQuery(query);
+    setShowQueryModal(true);
+  };
+
+  const handleUpdateStatus = async (queryId, newStatus) => {
+    try {
+      const response = await fetch(`/api/news/contact/${queryId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!response.ok) throw new Error('Failed to update status');
+
+      // Update local state
+      setContactQueries(prev => 
+        prev.map(query => 
+          query._id === queryId 
+            ? { ...query, status: newStatus }
+            : query
+        )
+      );
+
+      // Update selected query if it's the one being modified
+      if (selectedQuery?._id === queryId) {
+        setSelectedQuery(prev => ({ ...prev, status: newStatus }));
+      }
+
+      toast({
+        title: "Success",
+        description: "Query status updated successfully",
+      });
+    } catch (error) {
+      console.error('Error updating query status:', error);
+      toast({
+        title: "Error",
+        description: "Failed to update query status",
         variant: "destructive",
       });
     }
@@ -486,6 +536,107 @@ export default function AdminDashboard() {
     </div>
   );
 
+  const renderQueryDetailsModal = () => {
+    if (!selectedQuery) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="p-6">
+            <div className="flex justify-between items-start mb-6">
+              <h3 className="text-xl font-semibold text-gray-900">Query Details</h3>
+              <button
+                onClick={() => setShowQueryModal(false)}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Contact Information</h4>
+                <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Name</p>
+                    <p className="text-base font-medium text-gray-900">{selectedQuery.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Email</p>
+                    <p className="text-base font-medium text-gray-900">{selectedQuery.email}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Phone</p>
+                    <p className="text-base font-medium text-gray-900">{selectedQuery.phone}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Date Submitted</p>
+                    <p className="text-base font-medium text-gray-900">
+                      {new Date(selectedQuery.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Subject</h4>
+                <p className="mt-2 text-base text-gray-900">
+                  {selectedQuery.subject || 'No subject provided'}
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Message</h4>
+                <p className="mt-2 text-base text-gray-900 whitespace-pre-wrap">
+                  {selectedQuery.message}
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-500 mb-2">Status</h4>
+                <div className="flex space-x-3">
+                  <button
+                    onClick={() => handleUpdateStatus(selectedQuery._id, 'new')}
+                    className={`flex items-center px-3 py-2 rounded-md ${
+                      selectedQuery.status === 'new'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                  >
+                    <Clock className="h-4 w-4 mr-2" />
+                    New
+                  </button>
+                  <button
+                    onClick={() => handleUpdateStatus(selectedQuery._id, 'read')}
+                    className={`flex items-center px-3 py-2 rounded-md ${
+                      selectedQuery.status === 'read'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Read
+                  </button>
+                  <button
+                    onClick={() => handleUpdateStatus(selectedQuery._id, 'responded')}
+                    className={`flex items-center px-3 py-2 rounded-md ${
+                      selectedQuery.status === 'responded'
+                        ? 'bg-purple-100 text-purple-800'
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    Responded
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const renderContactQueriesContent = () => (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
@@ -493,64 +644,72 @@ export default function AdminDashboard() {
       </div>
       
       <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Name
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Contact Info
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Subject
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Message
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {contactQueries.map((query) => (
-              <tr key={query._id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{query.name}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{query.email}</div>
-                  <div className="text-sm text-gray-500">{query.phone}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{query.subject || 'No subject'}</div>
-                </td>
-                <td className="px-6 py-4">
-                  <div className="text-sm text-gray-900 max-w-xs truncate">{query.message}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">
-                    {new Date(query.createdAt).toLocaleDateString()}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                    query.status === 'new' ? 'bg-green-100 text-green-800' :
-                    query.status === 'read' ? 'bg-blue-100 text-blue-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {query.status}
-                  </span>
-                </td>
+        <div className="overflow-x-auto">
+          <table className="min-w-full divide-y divide-gray-200">
+            <thead className="bg-gray-50">
+              <tr>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Contact Info
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Subject
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Message
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Date
+                </th>
+                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {contactQueries.map((query) => (
+                <tr 
+                  key={query._id}
+                  onClick={() => handleQueryClick(query)}
+                  className="cursor-pointer hover:bg-gray-50 transition-colors"
+                >
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">{query.name}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{query.email}</div>
+                    <div className="text-sm text-gray-500">{query.phone}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{query.subject || 'No subject'}</div>
+                  </td>
+                  <td className="px-6 py-4">
+                    <div className="text-sm text-gray-900 max-w-xs truncate">{query.message}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-500">
+                      {new Date(query.createdAt).toLocaleDateString()}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      query.status === 'new' ? 'bg-green-100 text-green-800' :
+                      query.status === 'read' ? 'bg-blue-100 text-blue-800' :
+                      'bg-purple-100 text-purple-800'
+                    }`}>
+                      {query.status}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
+
+      {showQueryModal && renderQueryDetailsModal()}
     </div>
   );
 
