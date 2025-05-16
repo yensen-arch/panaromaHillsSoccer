@@ -11,7 +11,8 @@ import {
   Plus,
   Trash,
   Edit,
-  FileText
+  FileText,
+  Mail
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { logout, checkAuth } from '@/lib/auth-client';
@@ -28,6 +29,7 @@ export default function AdminDashboard() {
   const [isEditing, setIsEditing] = useState(false);
   const [currentNewsId, setCurrentNewsId] = useState(null);
   const [newsItems, setNewsItems] = useState([]);
+  const [contactQueries, setContactQueries] = useState([]);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -43,6 +45,7 @@ export default function AdminDashboard() {
         return;
       }
       fetchNews();
+      fetchContactQueries();
     };
     
     checkAuthentication();
@@ -59,6 +62,22 @@ export default function AdminDashboard() {
       toast({
         title: "Error",
         description: "Failed to fetch news",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const fetchContactQueries = async () => {
+    try {
+      const response = await fetch('/api/news/contact');
+      if (!response.ok) throw new Error('Failed to fetch contact queries');
+      const data = await response.json();
+      setContactQueries(data);
+    } catch (error) {
+      console.error('Error fetching contact queries:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch contact queries",
         variant: "destructive",
       });
     }
@@ -467,6 +486,74 @@ export default function AdminDashboard() {
     </div>
   );
 
+  const renderContactQueriesContent = () => (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-gray-900">Contact Queries</h2>
+      </div>
+      
+      <div className="bg-white rounded-lg shadow overflow-hidden">
+        <table className="min-w-full divide-y divide-gray-200">
+          <thead className="bg-gray-50">
+            <tr>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Name
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Contact Info
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Subject
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Message
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Date
+              </th>
+              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Status
+              </th>
+            </tr>
+          </thead>
+          <tbody className="bg-white divide-y divide-gray-200">
+            {contactQueries.map((query) => (
+              <tr key={query._id}>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm font-medium text-gray-900">{query.name}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">{query.email}</div>
+                  <div className="text-sm text-gray-500">{query.phone}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-900">{query.subject || 'No subject'}</div>
+                </td>
+                <td className="px-6 py-4">
+                  <div className="text-sm text-gray-900 max-w-xs truncate">{query.message}</div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="text-sm text-gray-500">
+                    {new Date(query.createdAt).toLocaleDateString()}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                    query.status === 'new' ? 'bg-green-100 text-green-800' :
+                    query.status === 'read' ? 'bg-blue-100 text-blue-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {query.status}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
   return (
     <div className="min-h-screen bg-gray-100 flex">
       {/* Sidebar */}
@@ -520,7 +607,17 @@ export default function AdminDashboard() {
               <Calendar className="mr-3 h-5 w-5" />
               Events
             </button>
-            
+            <button
+              onClick={() => setActiveTab('contact')}
+              className={`flex items-center px-4 py-2 text-sm font-medium rounded-md w-full ${
+                activeTab === 'contact' 
+                  ? 'bg-primary-700 text-white' 
+                  : 'text-primary-100 hover:bg-primary-700'
+              }`}
+            >
+              <Mail className="mr-3 h-5 w-5" />
+              Contact Queries
+            </button>
           </nav>
         </div>
         <div className="border-t border-primary-700 p-4">
@@ -586,6 +683,15 @@ export default function AdminDashboard() {
             <Calendar className="h-5 w-5" />
             <span className="text-xs mt-1">Events</span>
           </button>
+          <button
+            onClick={() => setActiveTab('contact')}
+            className={`flex flex-col items-center py-2 ${
+              activeTab === 'contact' ? 'text-white' : 'text-primary-100'
+            }`}
+          >
+            <Mail className="h-5 w-5" />
+            <span className="text-xs mt-1">Contact</span>
+          </button>
         </div>
       </div>
 
@@ -594,6 +700,7 @@ export default function AdminDashboard() {
         <main className="py-6 px-4 sm:px-6 md:py-8 md:px-8 bg-gray-100 min-h-screen">
           {activeTab === 'dashboard' && renderDashboardContent()}
           {activeTab === 'news' && renderNewsContent()}
+          {activeTab === 'contact' && renderContactQueriesContent()}
           {activeTab === 'members' && (
             <div className="bg-white rounded-lg shadow p-6">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">Member Management</h2>

@@ -86,6 +86,12 @@ export function Navbar() {
             >
               Join Now
             </Link>
+            <Link 
+              href="/contact" 
+              className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-full font-medium transition-all duration-300 transform hover:scale-105"
+            >
+              Contact Us
+            </Link>
           </nav>
 
           {/* Mobile Menu Button */}
@@ -142,6 +148,13 @@ export function Navbar() {
                 onClick={() => setIsMenuOpen(false)}
               >
                 Join Now
+              </Link>
+              <Link 
+                href="/contact" 
+                className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md font-medium text-center"
+                onClick={() => setIsMenuOpen(false)}
+              >
+                Contact Us
               </Link>
             </nav>
           </div>
