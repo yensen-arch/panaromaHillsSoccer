@@ -314,18 +314,6 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-        
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="rounded-full bg-purple-100 p-3 mr-4">
-              <Calendar className="h-6 w-6 text-purple-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-700">Upcoming Events</h3>
-              <p className="text-2xl font-bold text-gray-900">To be made</p>
-            </div>
-          </div>
-        </div>
       </div>
       
       <div className="bg-white rounded-lg shadow">
@@ -756,17 +744,6 @@ export default function AdminDashboard() {
               Members
             </button>
             <button
-              onClick={() => setActiveTab('events')}
-              className={`flex items-center px-4 py-2 text-sm font-medium rounded-md w-full ${
-                activeTab === 'events' 
-                  ? 'bg-primary-700 text-white' 
-                  : 'text-primary-100 hover:bg-primary-700'
-              }`}
-            >
-              <Calendar className="mr-3 h-5 w-5" />
-              Events
-            </button>
-            <button
               onClick={() => setActiveTab('contact')}
               className={`flex items-center px-4 py-2 text-sm font-medium rounded-md w-full ${
                 activeTab === 'contact' 
@@ -805,7 +782,7 @@ export default function AdminDashboard() {
 
       {/* Mobile nav */}
       <div className="md:hidden bg-primary-700 text-white fixed bottom-0 w-full z-10">
-        <div className="grid grid-cols-5">
+        <div className="grid grid-cols-4">
           <button
             onClick={() => setActiveTab('dashboard')}
             className={`flex flex-col items-center py-2 ${
@@ -833,15 +810,7 @@ export default function AdminDashboard() {
             <Users className="h-5 w-5" />
             <span className="text-xs mt-1">Members</span>
           </button>
-          <button
-            onClick={() => setActiveTab('events')}
-            className={`flex flex-col items-center py-2 ${
-              activeTab === 'events' ? 'text-white' : 'text-primary-100'
-            }`}
-          >
-            <Calendar className="h-5 w-5" />
-            <span className="text-xs mt-1">Events</span>
-          </button>
+
           <button
             onClick={() => setActiveTab('contact')}
             className={`flex flex-col items-center py-2 ${
