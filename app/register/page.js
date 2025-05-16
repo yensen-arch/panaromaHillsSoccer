@@ -19,8 +19,9 @@ export default function RegisterPage() {
   const [step, setStep] = useState(1);
   const [showIntroModal, setShowIntroModal] = useState(true);
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
+    childFirstName: '',
+    childLastName: '',
+    parentName: '',
     email: '',
     phone: '',
     dateOfBirth: '',
@@ -28,12 +29,15 @@ export default function RegisterPage() {
     address: '',
     city: '',
     postcode: '',
-    membershipType: 'standard',
-    experience: '',
+    uniformSize: '',
+    previousRegistration: '',
+    newsletterSubscription: false,
     emergencyContact: '',
     emergencyPhone: '',
     medicalConditions: '',
-    agreeTerms: false
+    liabilityAccepted: false,
+    agreeTerms: false,
+    paymentMethod: ''
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -99,8 +103,9 @@ export default function RegisterPage() {
   const validateStep1 = () => {
     const newErrors = {};
     
-    if (!formData.firstName.trim()) newErrors.firstName = 'First name is required';
-    if (!formData.lastName.trim()) newErrors.lastName = 'Last name is required';
+    if (!formData.childFirstName.trim()) newErrors.childFirstName = 'Child\'s first name is required';
+    if (!formData.childLastName.trim()) newErrors.childLastName = 'Child\'s last name is required';
+    if (!formData.parentName.trim()) newErrors.parentName = 'Parent\'s name is required';
     if (!formData.email.trim()) {
       newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -109,6 +114,7 @@ export default function RegisterPage() {
     if (!formData.phone.trim()) newErrors.phone = 'Phone number is required';
     if (!formData.dateOfBirth) newErrors.dateOfBirth = 'Date of birth is required';
     if (!formData.gender) newErrors.gender = 'Please select a gender';
+    if (!formData.uniformSize) newErrors.uniformSize = 'Please select a uniform size';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -120,7 +126,7 @@ export default function RegisterPage() {
     if (!formData.address.trim()) newErrors.address = 'Address is required';
     if (!formData.city.trim()) newErrors.city = 'City is required';
     if (!formData.postcode.trim()) newErrors.postcode = 'Postcode is required';
-    if (!formData.membershipType) newErrors.membershipType = 'Please select a membership type';
+    if (!formData.previousRegistration) newErrors.previousRegistration = 'Please select previous registration status';
     if (!formData.emergencyContact.trim()) newErrors.emergencyContact = 'Emergency contact is required';
     if (!formData.emergencyPhone.trim()) newErrors.emergencyPhone = 'Emergency contact phone is required';
     
@@ -131,8 +137,14 @@ export default function RegisterPage() {
   const validateStep3 = () => {
     const newErrors = {};
     
+    if (!formData.liabilityAccepted) {
+      newErrors.liabilityAccepted = 'You must accept the liability waiver';
+    }
     if (!formData.agreeTerms) {
       newErrors.agreeTerms = 'You must agree to the terms and conditions';
+    }
+    if (!formData.paymentMethod) {
+      newErrors.paymentMethod = 'Please select a payment method';
     }
     
     setErrors(newErrors);
@@ -187,43 +199,61 @@ export default function RegisterPage() {
 
   const renderStep1 = () => (
     <div className="space-y-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Personal Information</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Child's Information</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="space-y-2">
-          <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
-            First Name *
+          <label htmlFor="childFirstName" className="block text-sm font-medium text-gray-700">
+            Child's First Name *
           </label>
           <input
             type="text"
-            id="firstName"
-            name="firstName"
-            value={formData.firstName}
+            id="childFirstName"
+            name="childFirstName"
+            value={formData.childFirstName}
             onChange={handleChange}
             className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-              errors.firstName ? 'border-red-500' : 'border-gray-300'
+              errors.childFirstName ? 'border-red-500' : 'border-gray-300'
             }`}
-            placeholder="Enter your first name"
+            placeholder="Enter child's first name"
           />
-          {errors.firstName && <p className="text-sm text-red-600">{errors.firstName}</p>}
+          {errors.childFirstName && <p className="text-sm text-red-600">{errors.childFirstName}</p>}
         </div>
         
         <div className="space-y-2">
-          <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
-            Last Name *
+          <label htmlFor="childLastName" className="block text-sm font-medium text-gray-700">
+            Child's Last Name *
           </label>
           <input
             type="text"
-            id="lastName"
-            name="lastName"
-            value={formData.lastName}
+            id="childLastName"
+            name="childLastName"
+            value={formData.childLastName}
             onChange={handleChange}
             className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-              errors.lastName ? 'border-red-500' : 'border-gray-300'
+              errors.childLastName ? 'border-red-500' : 'border-gray-300'
             }`}
-            placeholder="Enter your last name"
+            placeholder="Enter child's last name"
           />
-          {errors.lastName && <p className="text-sm text-red-600">{errors.lastName}</p>}
+          {errors.childLastName && <p className="text-sm text-red-600">{errors.childLastName}</p>}
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <label htmlFor="parentName" className="block text-sm font-medium text-gray-700">
+          Parent's Name *
+        </label>
+        <input
+          type="text"
+          id="parentName"
+          name="parentName"
+          value={formData.parentName}
+          onChange={handleChange}
+          className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+            errors.parentName ? 'border-red-500' : 'border-gray-300'
+          }`}
+          placeholder="Enter parent's name"
+        />
+        {errors.parentName && <p className="text-sm text-red-600">{errors.parentName}</p>}
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -302,6 +332,31 @@ export default function RegisterPage() {
           {errors.gender && <p className="text-sm text-red-600">{errors.gender}</p>}
         </div>
       </div>
+
+      <div className="space-y-2">
+        <label htmlFor="uniformSize" className="block text-sm font-medium text-gray-700">
+          Child's Uniform Size *
+        </label>
+        <select
+          id="uniformSize"
+          name="uniformSize"
+          value={formData.uniformSize}
+          onChange={handleChange}
+          className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+            errors.uniformSize ? 'border-red-500' : 'border-gray-300'
+          }`}
+        >
+          <option value="">Select Uniform Size</option>
+          <option value="XS">XS</option>
+          <option value="S">S</option>
+          <option value="M">M</option>
+          <option value="L">L</option>
+          <option value="XL">XL</option>
+          <option value="Don't need (has already)">Don't need (has already)</option>
+        </select>
+        <p className="text-sm text-gray-500 mt-1">Please confirm if you don't need one - if it's the same style - refund of $25.00 will apply</p>
+        {errors.uniformSize && <p className="text-sm text-red-600">{errors.uniformSize}</p>}
+      </div>
       
       <div className="flex justify-end mt-8">
         <button
@@ -376,20 +431,28 @@ export default function RegisterPage() {
           </div>
         </div>
       </div>
-      
+
       <div className="space-y-2">
-        <label htmlFor="experience" className="block text-sm font-medium text-gray-700">
-          Football Experience
+        <label htmlFor="previousRegistration" className="block text-sm font-medium text-gray-700">
+          Previous Registration Status *
         </label>
-        <textarea
-          id="experience"
-          name="experience"
-          rows="3"
-          value={formData.experience}
+        <select
+          id="previousRegistration"
+          name="previousRegistration"
+          value={formData.previousRegistration}
           onChange={handleChange}
-          placeholder="Tell us about your football experience (level played, positions, etc.)"
-          className="w-full p-3 border border-gray-300 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-        ></textarea>
+          className={`w-full p-3 border rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
+            errors.previousRegistration ? 'border-red-500' : 'border-gray-300'
+          }`}
+        >
+          <option value="">Select Previous Registration</option>
+          <option value="registered before 2020">registered before 2020</option>
+          <option value="2020 SUMMER soccer">2020 SUMMER soccer</option>
+          <option value="2020/2021/2023 SUMMER soccer">2020/2021/2023 SUMMER soccer</option>
+          <option value="2024 SUMMER soccer">2024 SUMMER soccer</option>
+          <option value="first time- never been registered before">first time- never been registered before</option>
+        </select>
+        {errors.previousRegistration && <p className="text-sm text-red-600">{errors.previousRegistration}</p>}
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -444,6 +507,23 @@ export default function RegisterPage() {
           className="w-full p-3 border border-gray-300 rounded-lg transition-colors duration-200 focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
         ></textarea>
       </div>
+
+      <div className="flex items-start space-x-3">
+        <input
+          type="checkbox"
+          id="newsletterSubscription"
+          name="newsletterSubscription"
+          checked={formData.newsletterSubscription}
+          onChange={handleChange}
+          className="mt-1 h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+        />
+        <label htmlFor="newsletterSubscription" className="text-sm text-gray-700">
+          I agree to receive email newsletter or notifications from PanoramaHillsSoccer/CalgarySoccerStars periodically, regarding the soccer program, training sessions, cancellations and tournaments for kids
+        </label>
+      </div>
+      <p className="text-sm text-gray-500">
+        Note: If at any time you would like to unsubscribe from receiving our future emails/newsletters, unsubscribe link will be located at the bottom of each newsletter/email
+      </p>
       
       <div className="mt-8 flex justify-between">
         <button
@@ -466,88 +546,71 @@ export default function RegisterPage() {
 
   const renderStep3 = () => (
     <div className="space-y-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6">Membership & Payment</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6">Payment & Terms</h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {membershipOptions.map((option) => (
-          <div 
-            key={option.id}
-            className={`border rounded-xl overflow-hidden transition-all duration-300 hover:shadow-lg ${
-              formData.membershipType === option.id
-                ? 'border-primary-500 shadow-lg transform -translate-y-1'
-                : 'border-gray-200 hover:border-primary-300'
-            }`}
-          >
-            <div className={`p-6 ${formData.membershipType === option.id ? 'bg-primary-50' : 'bg-white'}`}>
-              <div className="flex justify-between items-start mb-4">
-                <h3 className="text-xl font-bold text-gray-900">{option.name}</h3>
-                {formData.membershipType === option.id && (
-                  <Check className="h-6 w-6 text-primary-600" />
-                )}
-              </div>
-              <p className="text-2xl font-bold text-primary-600 mb-4">{option.price}</p>
-              <ul className="space-y-3">
-                {option.features.map((feature, index) => (
-                  <li key={index} className="flex items-start">
-                    <CheckCircle className="h-5 w-5 text-primary-500 mr-2 flex-shrink-0 mt-0.5" />
-                    <span className="text-gray-700">{feature}</span>
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-6">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setFormData({
-                      ...formData,
-                      membershipType: option.id
-                    });
-                  }}
-                  className={`w-full py-3 rounded-lg transition-all duration-300 ${
-                    formData.membershipType === option.id
-                      ? 'bg-primary-600 text-white'
-                      : 'bg-white text-primary-600 border border-primary-600 hover:bg-primary-50'
-                  }`}
-                >
-                  {formData.membershipType === option.id ? 'Selected' : 'Select'}
-                </button>
-              </div>
+      <div className="space-y-6">
+        <div className="p-6 bg-gray-50 rounded-xl border border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Liability Waiver</h3>
+          <div className="h-40 overflow-y-auto p-4 bg-white border border-gray-200 rounded-lg mb-4 text-sm text-gray-700">
+            <p className="mb-2">By participating in Panorama Hills Soccer Club activities, you acknowledge and agree to the following:</p>
+            <ol className="list-decimal pl-5 space-y-2">
+              <li>I understand that participation in soccer activities involves inherent risks.</li>
+              <li>I accept full responsibility for any injuries or damages that may occur.</li>
+              <li>I release Panorama Hills Soccer Club from any liability for injuries or damages.</li>
+              <li>I confirm that the participant is in good health and fit to participate.</li>
+              <li>I understand that the club has the right to refuse participation if deemed necessary.</li>
+            </ol>
+          </div>
+          <div className="flex items-start mb-4">
+            <input
+              type="checkbox"
+              id="liabilityAccepted"
+              name="liabilityAccepted"
+              checked={formData.liabilityAccepted}
+              onChange={handleChange}
+              className="mt-1 mr-2 h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+            />
+            <label htmlFor="liabilityAccepted" className="text-gray-700">
+              I have read and accept the liability waiver *
+            </label>
+          </div>
+          {errors.liabilityAccepted && <p className="mt-1 text-sm text-red-600">{errors.liabilityAccepted}</p>}
+        </div>
+
+        <div className="p-6 bg-gray-50 rounded-xl border border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
+          <div className="space-y-4">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="paymentOnline"
+                name="paymentMethod"
+                value="online-stripe"
+                checked={formData.paymentMethod === 'online-stripe'}
+                onChange={handleChange}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500"
+              />
+              <label htmlFor="paymentOnline" className="ml-3 block text-sm font-medium text-gray-700">
+                Online - Stripe (3% PP service fee added)
+              </label>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="paymentInPerson"
+                name="paymentMethod"
+                value="in-person-cash-cheque"
+                checked={formData.paymentMethod === 'in-person-cash-cheque'}
+                onChange={handleChange}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500"
+              />
+              <label htmlFor="paymentInPerson" className="ml-3 block text-sm font-medium text-gray-700">
+                In Person - Cash/Cheque
+              </label>
             </div>
           </div>
-        ))}
-      </div>
-      
-      <div className="mt-8 p-6 bg-gray-50 rounded-xl border border-gray-200">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Terms and Conditions</h3>
-        <div className="h-40 overflow-y-auto p-4 bg-white border border-gray-200 rounded-lg mb-4 text-sm text-gray-700">
-          <p className="mb-2">By registering with Panaroma Hills Soccer Club, you agree to the following terms and conditions:</p>
-          <ol className="list-decimal pl-5 space-y-2">
-            <li>Membership is valid for one year from the date of registration.</li>
-            <li>Members must adhere to the club's code of conduct at all times.</li>
-            <li>Membership fees are non-refundable except in exceptional circumstances.</li>
-            <li>The club reserves the right to refuse or revoke membership.</li>
-            <li>Members are expected to attend training sessions regularly.</li>
-            <li>The club is not responsible for personal belongings left at the facilities.</li>
-            <li>Members must inform the club of any changes to their personal information.</li>
-            <li>Photos and videos may be taken during club activities for promotional purposes.</li>
-            <li>Members must have appropriate insurance coverage.</li>
-            <li>All members must follow the directions of coaches and club officials.</li>
-          </ol>
+          {errors.paymentMethod && <p className="mt-2 text-sm text-red-600">{errors.paymentMethod}</p>}
         </div>
-        <div className="flex items-start mb-4">
-          <input
-            type="checkbox"
-            id="agreeTerms"
-            name="agreeTerms"
-            checked={formData.agreeTerms}
-            onChange={handleChange}
-            className="mt-1 mr-2 h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
-          />
-          <label htmlFor="agreeTerms" className="text-gray-700">
-            I have read and agree to the terms and conditions *
-          </label>
-        </div>
-        {errors.agreeTerms && <p className="mt-1 text-sm text-red-600">{errors.agreeTerms}</p>}
       </div>
       
       <div className="mt-8 flex justify-between">

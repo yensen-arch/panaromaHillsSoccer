@@ -6,15 +6,75 @@ export async function POST(request) {
   try {
     await dbConnect();
     const data = await request.json();
-    // Validate required fields (basic)
-    if (!data.firstName || !data.lastName || !data.email || !data.phone || !data.dateOfBirth || !data.gender || !data.address || !data.city || !data.postcode || !data.membershipType || !data.emergencyContact || !data.emergencyPhone || typeof data.liabilityAccepted !== 'boolean' || typeof data.agreeTerms !== 'boolean' || !data.paymentMethod) {
-      return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    
+    // Validate required fields
+    const requiredFields = [
+      'childFirstName',
+      'childLastName',
+      'parentName',
+      'email',
+      'phone',
+      'dateOfBirth',
+      'gender',
+      'address',
+      'city',
+      'postcode',
+      'uniformSize',
+      'previousRegistration',
+      'newsletterSubscription',
+      'emergencyContact',
+      'emergencyPhone',
+      'liabilityAccepted',
+      'agreeTerms',
+      'paymentMethod'
+    ];
+
+    const missingFields = requiredFields.filter(field => !data[field]);
+    if (missingFields.length > 0) {
+      return NextResponse.json({ 
+        error: 'Missing required fields', 
+        fields: missingFields 
+      }, { status: 400 });
     }
+
+    // Validate boolean fields
+    if (typeof data.liabilityAccepted !== 'boolean' || 
+        typeof data.agreeTerms !== 'boolean' || 
+        typeof data.newsletterSubscription !== 'boolean') {
+      return NextResponse.json({ 
+        error: 'Invalid boolean fields' 
+      }, { status: 400 });
+    }
+
+    // Validate enum fields
+    const validUniformSizes = ['XS', 'S', 'M', 'L', 'XL', 'Don\'t need (has already)'];
+    const validPreviousRegistrations = [
+      'registered before 2020',
+      '2020 SUMMER soccer',
+      '2020/2021/2023 SUMMER soccer',
+      '2024 SUMMER soccer',
+      'first time- never been registered before'
+    ];
+    const validPaymentMethods = ['online-stripe', 'in-person-cash-cheque'];
+
+    if (!validUniformSizes.includes(data.uniformSize)) {
+      return NextResponse.json({ error: 'Invalid uniform size' }, { status: 400 });
+    }
+
+    if (!validPreviousRegistrations.includes(data.previousRegistration)) {
+      return NextResponse.json({ error: 'Invalid previous registration option' }, { status: 400 });
+    }
+
+    if (!validPaymentMethods.includes(data.paymentMethod)) {
+      return NextResponse.json({ error: 'Invalid payment method' }, { status: 400 });
+    }
+
     const registration = new Registration({
       ...data,
       paymentStatus: data.paymentStatus || 'unpaid',
       createdAt: new Date(),
     });
+
     await registration.save();
     return NextResponse.json(registration);
   } catch (error) {

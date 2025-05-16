@@ -444,7 +444,21 @@ export default function AdminDashboard() {
               </div>
               <div>
                 <h3 className="text-base sm:text-lg font-semibold text-gray-700">Total Members</h3>
-                <p className="text-xl sm:text-2xl font-bold text-gray-900">To be made</p>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{registrations.length}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="flex items-center">
+              <div className="rounded-full bg-purple-100 p-3 mr-4">
+                <CheckCircle className="h-6 w-6 text-purple-600" />
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700">Paid Members</h3>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">
+                  {registrations.filter(reg => reg.paymentStatus === 'paid').length}
+                </p>
               </div>
             </div>
           </div>
@@ -811,17 +825,6 @@ export default function AdminDashboard() {
               News Management
             </button>
             <button
-              onClick={() => setActiveTab('members')}
-              className={`flex items-center px-4 py-2 text-sm font-medium rounded-md w-full ${
-                activeTab === 'members' 
-                  ? 'bg-primary-700 text-white' 
-                  : 'text-primary-100 hover:bg-primary-700'
-              }`}
-            >
-              <Users className="mr-3 h-5 w-5" />
-              Members
-            </button>
-            <button
               onClick={() => setActiveTab('contact')}
               className={`flex items-center px-4 py-2 text-sm font-medium rounded-md w-full ${
                 activeTab === 'contact' 
@@ -890,15 +893,7 @@ export default function AdminDashboard() {
             <Newspaper className="h-5 w-5" />
             <span className="text-xs mt-1">News</span>
           </button>
-          <button
-            onClick={() => setActiveTab('members')}
-            className={`flex flex-col items-center py-2 ${
-              activeTab === 'members' ? 'text-white' : 'text-primary-100'
-            }`}
-          >
-            <Users className="h-5 w-5" />
-            <span className="text-xs mt-1">Members</span>
-          </button>
+            
           <button
             onClick={() => setActiveTab('contact')}
             className={`flex flex-col items-center py-2 ${
@@ -929,12 +924,6 @@ export default function AdminDashboard() {
               {activeTab === 'dashboard' && renderDashboardContent()}
               {activeTab === 'news' && renderNewsContent()}
               {activeTab === 'contact' && renderContactQueriesContent()}
-              {activeTab === 'members' && (
-                <div className="bg-white rounded-lg shadow p-4 sm:p-6">
-                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Member Management</h2>
-                  <p className="text-gray-600">This feature is not implemented in the demo version.</p>
-                </div>
-              )}
               {activeTab === 'registrations' && renderRegistrationsContent()}
             </div>
           </div>
