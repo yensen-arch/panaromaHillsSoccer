@@ -288,107 +288,210 @@ export default function AdminDashboard() {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   }
 
-  const renderDashboardContent = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="rounded-full bg-blue-100 p-3 mr-4">
-              <Newspaper className="h-6 w-6 text-blue-600" />
+  const renderQueryDetailsModal = () => {
+    if (!selectedQuery) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="p-4 sm:p-6">
+            <div className="flex justify-between items-start mb-6">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Query Details</h3>
+              <button
+                onClick={() => setShowQueryModal(false)}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <X className="h-6 w-6" />
+              </button>
             </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-700">News Articles</h3>
-              <p className="text-2xl font-bold text-gray-900">{newsItems.length}</p>
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center">
-            <div className="rounded-full bg-green-100 p-3 mr-4">
-              <Users className="h-6 w-6 text-green-600" />
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-700">Total Members</h3>
-              <p className="text-2xl font-bold text-gray-900">To be made</p>
+
+            <div className="space-y-6">
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Contact Information</h4>
+                <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-sm text-gray-500">Name</p>
+                    <p className="text-base font-medium text-gray-900">{selectedQuery.name}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Email</p>
+                    <p className="text-base font-medium text-gray-900">{selectedQuery.email}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Phone</p>
+                    <p className="text-base font-medium text-gray-900">{selectedQuery.phone}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Date Submitted</p>
+                    <p className="text-base font-medium text-gray-900">
+                      {new Date(selectedQuery.createdAt).toLocaleString()}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Subject</h4>
+                <p className="mt-2 text-base text-gray-900">
+                  {selectedQuery.subject || 'No subject provided'}
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Message</h4>
+                <p className="mt-2 text-base text-gray-900 whitespace-pre-wrap">
+                  {selectedQuery.message}
+                </p>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-500 mb-2">Status</h4>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => handleUpdateStatus(selectedQuery._id, 'new')}
+                    className={`flex items-center px-3 py-2 rounded-md ${
+                      selectedQuery.status === 'new'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                  >
+                    <Clock className="h-4 w-4 mr-2" />
+                    New
+                  </button>
+                  <button
+                    onClick={() => handleUpdateStatus(selectedQuery._id, 'read')}
+                    className={`flex items-center px-3 py-2 rounded-md ${
+                      selectedQuery.status === 'read'
+                        ? 'bg-blue-100 text-blue-800'
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                  >
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                    Read
+                  </button>
+                  <button
+                    onClick={() => handleUpdateStatus(selectedQuery._id, 'responded')}
+                    className={`flex items-center px-3 py-2 rounded-md ${
+                      selectedQuery.status === 'responded'
+                        ? 'bg-purple-100 text-purple-800'
+                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
+                    }`}
+                  >
+                    <Mail className="h-4 w-4 mr-2" />
+                    Responded
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
-      
-      <div className="bg-white rounded-lg shadow">
-        <div className="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h2 className="text-xl font-semibold text-gray-900">Recent News</h2>
+    );
+  };
+
+  const renderDashboardContent = () => {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="flex items-center">
+              <div className="rounded-full bg-blue-100 p-3 mr-4">
+                <Newspaper className="h-6 w-6 text-blue-600" />
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700">News Articles</h3>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">{newsItems.length}</p>
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="flex items-center">
+              <div className="rounded-full bg-green-100 p-3 mr-4">
+                <Users className="h-6 w-6 text-green-600" />
+              </div>
+              <div>
+                <h3 className="text-base sm:text-lg font-semibold text-gray-700">Total Members</h3>
+                <p className="text-xl sm:text-2xl font-bold text-gray-900">To be made</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow">
+          <div className="p-4 sm:p-6 border-b border-gray-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Recent News</h2>
+            <button
+              onClick={handleAddNews}
+              className="w-full sm:w-auto px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 flex items-center justify-center"
+            >
+              <Plus className="mr-2 h-5 w-5" />
+              Add News
+            </button>
+          </div>
+          <div className="p-4 sm:p-6">
+            <div className="space-y-4">
+              {newsItems.slice(0, 5).map((item) => (
+                <div key={item._id} className="flex flex-col sm:flex-row items-start sm:items-center p-4 border-b border-gray-100 last:border-0 gap-4">
+                  <div className="w-full sm:w-16 h-16 bg-gray-200 rounded-md flex-shrink-0 overflow-hidden">
+                    <img 
+                      src={item.imageUrl} 
+                      alt={item.title} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <div className="flex-grow min-w-0">
+                    <h3 className="font-semibold text-gray-900 truncate">{item.title}</h3>
+                    <p className="text-sm text-gray-500">
+                      {new Date(item.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <div className="flex space-x-2 self-end sm:self-auto">
+                    <button 
+                      onClick={() => {
+                        handleEditNews(item);
+                        setActiveTab('news');
+                      }}
+                      className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
+                    >
+                      <Edit className="h-4 w-4" />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteNews(item._id)}
+                      className="p-2 text-red-600 hover:bg-red-50 rounded-full"
+                    >
+                      <Trash className="h-4 w-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderNewsContent = () => {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">News Management</h2>
           <button
             onClick={handleAddNews}
-            className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 flex items-center"
+            className="w-full sm:w-auto px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 flex items-center justify-center"
           >
             <Plus className="mr-2 h-5 w-5" />
             Add News
           </button>
         </div>
-        <div className="p-6">
-          <div className="space-y-4">
-            {newsItems.slice(0, 5).map((item) => (
-              <div key={item._id} className="flex items-start p-4 border-b border-gray-100 last:border-0">
-                <div className="w-16 h-16 bg-gray-200 rounded-md flex-shrink-0 overflow-hidden">
-                  <img 
-                    src={item.imageUrl} 
-                    alt={item.title} 
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <div className="ml-4 flex-grow">
-                  <h3 className="font-semibold text-gray-900">{item.title}</h3>
-                  <p className="text-sm text-gray-500">
-                    {new Date(item.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-                <div className="flex space-x-2">
-                  <button 
-                    onClick={() => {
-                      handleEditNews(item);
-                      setActiveTab('news');
-                    }}
-                    className="p-2 text-blue-600 hover:bg-blue-50 rounded-full"
-                  >
-                    <Edit className="h-4 w-4" />
-                  </button>
-                  <button 
-                    onClick={() => handleDeleteNews(item._id)}
-                    className="p-2 text-red-600 hover:bg-red-50 rounded-full"
-                  >
-                    <Trash className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  const renderNewsContent = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">News Management</h2>
-        <button
-          onClick={handleAddNews}
-          className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 flex items-center"
-        >
-          <Plus className="mr-2 h-5 w-5" />
-          Add News
-        </button>
-      </div>
-      
-      {showNewsForm && (
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold mb-4">
-            {isEditing ? 'Edit News' : 'Add News'}
-          </h3>
-          <form onSubmit={handleSubmitNews}>
-            <div className="space-y-4">
+        
+        {showNewsForm && (
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">
+              {isEditing ? 'Edit News' : 'Add News'}
+            </h3>
+            <form onSubmit={handleSubmitNews} className="space-y-4">
               <div>
                 <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
                   Title
@@ -435,271 +538,172 @@ export default function AdminDashboard() {
                 />
               </div>
               
-              <div className="flex justify-end space-x-3">
+              <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
                 <button
                   type="button"
                   onClick={() => setShowNewsForm(false)}
-                  className="px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                  className="w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
+                  className="w-full sm:w-auto px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
                 >
                   {isEditing ? 'Update' : 'Publish'}
                 </button>
               </div>
-            </div>
-          </form>
-        </div>
-      )}
-      
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Title
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-              </th>
-              <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Preview
-              </th>
-              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {newsItems.map((item) => (
-              <tr key={item._id}>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm font-medium text-gray-900">{item.title}</div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-500">
-                    {new Date(item.createdAt).toLocaleDateString()}
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="h-10 w-10 flex-shrink-0">
-                      <img 
-                        className="h-10 w-10 rounded-md object-cover" 
-                        src={item.imageUrl} 
-                        alt={item.title} 
-                      />
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm text-gray-900 max-w-xs truncate">
-                        {item.content.substring(0, 50)}...
+            </form>
+          </div>
+        )}
+        
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Title
+                  </th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Preview
+                  </th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {newsItems.map((item) => (
+                  <tr key={item._id}>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{item.title}</div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">
+                        {new Date(item.createdAt).toLocaleDateString()}
                       </div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex justify-end space-x-2">
-                    <button
-                      onClick={() => handleEditNews(item)}
-                      className="text-blue-600 hover:text-blue-900"
-                    >
-                      <Edit className="h-5 w-5" />
-                    </button>
-                    <button
-                      onClick={() => handleDeleteNews(item._id)}
-                      className="text-red-600 hover:text-red-900"
-                    >
-                      <Trash className="h-5 w-5" />
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-
-  const renderQueryDetailsModal = () => {
-    if (!selectedQuery) return null;
-
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          <div className="p-6">
-            <div className="flex justify-between items-start mb-6">
-              <h3 className="text-xl font-semibold text-gray-900">Query Details</h3>
-              <button
-                onClick={() => setShowQueryModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="h-6 w-6" />
-              </button>
-            </div>
-
-            <div className="space-y-6">
-              <div>
-                <h4 className="text-sm font-medium text-gray-500">Contact Information</h4>
-                <div className="mt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-500">Name</p>
-                    <p className="text-base font-medium text-gray-900">{selectedQuery.name}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Email</p>
-                    <p className="text-base font-medium text-gray-900">{selectedQuery.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Phone</p>
-                    <p className="text-base font-medium text-gray-900">{selectedQuery.phone}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-500">Date Submitted</p>
-                    <p className="text-base font-medium text-gray-900">
-                      {new Date(selectedQuery.createdAt).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="text-sm font-medium text-gray-500">Subject</h4>
-                <p className="mt-2 text-base text-gray-900">
-                  {selectedQuery.subject || 'No subject provided'}
-                </p>
-              </div>
-
-              <div>
-                <h4 className="text-sm font-medium text-gray-500">Message</h4>
-                <p className="mt-2 text-base text-gray-900 whitespace-pre-wrap">
-                  {selectedQuery.message}
-                </p>
-              </div>
-
-              <div>
-                <h4 className="text-sm font-medium text-gray-500 mb-2">Status</h4>
-                <div className="flex space-x-3">
-                  <button
-                    onClick={() => handleUpdateStatus(selectedQuery._id, 'new')}
-                    className={`flex items-center px-3 py-2 rounded-md ${
-                      selectedQuery.status === 'new'
-                        ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                    }`}
-                  >
-                    <Clock className="h-4 w-4 mr-2" />
-                    New
-                  </button>
-                  <button
-                    onClick={() => handleUpdateStatus(selectedQuery._id, 'read')}
-                    className={`flex items-center px-3 py-2 rounded-md ${
-                      selectedQuery.status === 'read'
-                        ? 'bg-blue-100 text-blue-800'
-                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                    }`}
-                  >
-                    <CheckCircle className="h-4 w-4 mr-2" />
-                    Read
-                  </button>
-                  <button
-                    onClick={() => handleUpdateStatus(selectedQuery._id, 'responded')}
-                    className={`flex items-center px-3 py-2 rounded-md ${
-                      selectedQuery.status === 'responded'
-                        ? 'bg-purple-100 text-purple-800'
-                        : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
-                    }`}
-                  >
-                    <Mail className="h-4 w-4 mr-2" />
-                    Responded
-                  </button>
-                </div>
-              </div>
-            </div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                      <div className="flex items-center">
+                        <div className="h-10 w-10 flex-shrink-0">
+                          <img 
+                            className="h-10 w-10 rounded-md object-cover" 
+                            src={item.imageUrl} 
+                            alt={item.title} 
+                          />
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm text-gray-900 max-w-xs truncate">
+                            {item.content.substring(0, 50)}...
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex justify-end space-x-2">
+                        <button
+                          onClick={() => handleEditNews(item)}
+                          className="text-blue-600 hover:text-blue-900"
+                        >
+                          <Edit className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteNews(item._id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          <Trash className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     );
   };
 
-  const renderContactQueriesContent = () => (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-900">Contact Queries</h2>
-      </div>
-      
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Name
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Contact Info
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Subject
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Message
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {contactQueries.map((query) => (
-                <tr 
-                  key={query._id}
-                  onClick={() => handleQueryClick(query)}
-                  className="cursor-pointer hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{query.name}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{query.email}</div>
-                    <div className="text-sm text-gray-500">{query.phone}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{query.subject || 'No subject'}</div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm text-gray-900 max-w-xs truncate">{query.message}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500">
-                      {new Date(query.createdAt).toLocaleDateString()}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      query.status === 'new' ? 'bg-green-100 text-green-800' :
-                      query.status === 'read' ? 'bg-blue-100 text-blue-800' :
-                      'bg-purple-100 text-purple-800'
-                    }`}>
-                      {query.status}
-                    </span>
-                  </td>
+  const renderContactQueriesContent = () => {
+    return (
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Contact Queries</h2>
+        </div>
+        
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Name
+                  </th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Contact Info
+                  </th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Subject
+                  </th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Message
+                  </th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Date
+                  </th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {contactQueries.map((query) => (
+                  <tr 
+                    key={query._id}
+                    onClick={() => handleQueryClick(query)}
+                    className="cursor-pointer hover:bg-gray-50 transition-colors"
+                  >
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{query.name}</div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{query.email}</div>
+                      <div className="text-sm text-gray-500">{query.phone}</div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{query.subject || 'No subject'}</div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4">
+                      <div className="text-sm text-gray-900 max-w-xs truncate">{query.message}</div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-500">
+                        {new Date(query.createdAt).toLocaleDateString()}
+                      </div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        query.status === 'new' ? 'bg-green-100 text-green-800' :
+                        query.status === 'read' ? 'bg-blue-100 text-blue-800' :
+                        'bg-purple-100 text-purple-800'
+                      }`}>
+                        {query.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
-
-      {showQueryModal && renderQueryDetailsModal()}
-    </div>
-  );
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex">
@@ -770,7 +774,7 @@ export default function AdminDashboard() {
       {/* Mobile header */}
       <div className="md:hidden bg-primary-800 text-white p-4 w-full fixed top-0 z-10">
         <div className="flex justify-between items-center">
-          <div className="text-lg font-bold"> Admin</div>
+          <div className="text-lg font-bold">Admin</div>
           <button
             onClick={handleLogout}
             className="flex items-center text-primary-100 hover:text-white"
@@ -810,7 +814,6 @@ export default function AdminDashboard() {
             <Users className="h-5 w-5" />
             <span className="text-xs mt-1">Members</span>
           </button>
-
           <button
             onClick={() => setActiveTab('contact')}
             className={`flex flex-col items-center py-2 ${
@@ -825,30 +828,25 @@ export default function AdminDashboard() {
 
       {/* Main content */}
       <div className="md:ml-64 flex-1">
-        <main className="py-6 px-4 sm:px-6 md:py-8 md:px-8 bg-gray-100 min-h-screen">
-          {activeTab === 'dashboard' && renderDashboardContent()}
-          {activeTab === 'news' && renderNewsContent()}
-          {activeTab === 'contact' && renderContactQueriesContent()}
-          {activeTab === 'members' && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Member Management</h2>
-              <p className="text-gray-600">This feature is not implemented in the demo version.</p>
+        <main className="min-h-screen bg-gray-100">
+          {/* Add padding for mobile header and bottom nav */}
+          <div className="pt-16 pb-20 md:pt-0 md:pb-0">
+            <div className="p-4 sm:p-6 md:p-8">
+              {activeTab === 'dashboard' && renderDashboardContent()}
+              {activeTab === 'news' && renderNewsContent()}
+              {activeTab === 'contact' && renderContactQueriesContent()}
+              {activeTab === 'members' && (
+                <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+                  <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-4">Member Management</h2>
+                  <p className="text-gray-600">This feature is not implemented in the demo version.</p>
+                </div>
+              )}
             </div>
-          )}
-          {activeTab === 'events' && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Event Management</h2>
-              <p className="text-gray-600">This feature is not implemented in the demo version.</p>
-            </div>
-          )}
-          {activeTab === 'settings' && (
-            <div className="bg-white rounded-lg shadow p-6">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Settings</h2>
-              <p className="text-gray-600">This feature is not implemented in the demo version.</p>
-            </div>
-          )}
+          </div>
         </main>
       </div>
+
+      {showQueryModal && renderQueryDetailsModal()}
     </div>
   );
 }
