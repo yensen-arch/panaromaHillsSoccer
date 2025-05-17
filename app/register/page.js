@@ -12,8 +12,11 @@ import {
 import Image  from 'next/image';
 
 
+
 // Replace with your own Stripe publishable key when actually implementing
-const stripePromise = loadStripe(process.env.STRIPE_PUBLISHABLE_KEY);
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
+
+console.log("stripePublishableKey",process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 export default function RegisterPage() {
   const [step, setStep] = useState(1);
@@ -42,48 +45,6 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState(null);
-
-  const membershipOptions = [
-    {
-      id: 'standard',
-      name: 'Standard Membership',
-      price: '£120/year',
-      features: [
-        'Access to club facilities',
-        'Weekly training sessions',
-        'Club kit (jersey, shorts, socks)',
-        'Insurance coverage',
-        'Participation in club tournaments'
-      ]
-    },
-    {
-      id: 'premium',
-      name: 'Premium Membership',
-      price: '£200/year',
-      features: [
-        'All Standard benefits',
-        'Personal training session (monthly)',
-        'Premium club kit (home and away)',
-        'Free entry to social events',
-        'Priority registration for special events',
-        'Fitness assessment twice yearly'
-      ]
-    },
-    {
-      id: 'youth',
-      name: 'Youth Membership',
-      price: '£80/year',
-      features: [
-        'Age-appropriate training',
-        'Club kit (jersey, shorts, socks)',
-        'Insurance coverage',
-        'Skill development focus',
-        'Participation in youth tournaments',
-        'End of season certificate'
-      ]
-    }
-  ];
-
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -174,21 +135,67 @@ export default function RegisterPage() {
     setIsLoading(true);
     
     try {
-      // In a real app, you would submit to your API to create a Stripe Checkout session
-      // const response = await fetch('/api/create-checkout-session', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(formData)
-      // });
-      
-      // const { sessionId } = await response.json();
-      // const stripe = await stripePromise;
-      // const { error } = await stripe.redirectToCheckout({ sessionId });
-      
-      // For demo purposes, simulate payment success
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      setPaymentStatus('success');
-      
+      if (formData.paymentMethod === 'online-stripe') {
+        // For online payment, create an unpaid registration first
+        const registrationResponse = await fetch('/api/registration', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...formData,
+            paymentStatus: 'unpaid',
+            paymentMethod: 'online-stripe'
+          })
+        });
+
+        if (!registrationResponse.ok) {
+          throw new Error('Failed to create registration');
+        }
+
+        const registrationData = await registrationResponse.json();
+
+        // Create Stripe checkout session
+        const response = await fetch('/api/create-checkout-session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            registrationId: registrationData._id,
+            amount: 103, // $100 + 3% fee
+            email: formData.email,
+            name: `${formData.childFirstName} ${formData.childLastName}`
+          })
+        });
+        
+        if (!response.ok) {
+          throw new Error('Failed to create checkout session');
+        }
+
+        console.log('response', response);
+        const { sessionId } = await response.json();
+        const stripe = await stripePromise;
+        const { error } = await stripe.redirectToCheckout({ sessionId });
+        
+        if (error) {
+          console.error('Error:', error);
+          setPaymentStatus('error');
+        }
+      } else {
+        // For offline payment, create the registration directly
+        const registrationResponse = await fetch('/api/registration', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            ...formData,
+            paymentStatus: 'unpaid',
+            paymentMethod: 'in-person-cash-cheque'
+          })
+        });
+
+        if (!registrationResponse.ok) {
+          throw new Error('Failed to register user');
+        }
+
+        setPaymentStatus('success');
+      }
     } catch (error) {
       console.error('Error:', error);
       setPaymentStatus('error');
@@ -354,7 +361,7 @@ export default function RegisterPage() {
           <option value="XL">XL</option>
           <option value="Don't need (has already)">Don't need (has already)</option>
         </select>
-        <p className="text-sm text-gray-500 mt-1">Please confirm if you don't need one - if it's the same style - refund of $25.00 will apply</p>
+        <p className="text-sm text-gray-500 mt-1">Please confirm if you don't need one - refund of $25.00 will apply</p>
         {errors.uniformSize && <p className="text-sm text-red-600">{errors.uniformSize}</p>}
       </div>
       
@@ -550,6 +557,41 @@ export default function RegisterPage() {
       
       <div className="space-y-6">
         <div className="p-6 bg-gray-50 rounded-xl border border-gray-200">
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
+          <div className="space-y-4">
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="paymentOnline"
+                name="paymentMethod"
+                value="online-stripe"
+                checked={formData.paymentMethod === 'online-stripe'}
+                onChange={handleChange}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500"
+              />
+              <label htmlFor="paymentOnline" className="ml-3 block text-sm font-medium text-gray-700">
+                Online - Stripe ($103.00 - includes 3% service fee)
+              </label>
+            </div>
+            <div className="flex items-center">
+              <input
+                type="radio"
+                id="paymentInPerson"
+                name="paymentMethod"
+                value="in-person-cash-cheque"
+                checked={formData.paymentMethod === 'in-person-cash-cheque'}
+                onChange={handleChange}
+                className="h-4 w-4 text-primary-600 focus:ring-primary-500"
+              />
+              <label htmlFor="paymentInPerson" className="ml-3 block text-sm font-medium text-gray-700">
+                In Person - Cash/Cheque ($100.00)
+              </label>
+            </div>
+          </div>
+          {errors.paymentMethod && <p className="mt-2 text-sm text-red-600">{errors.paymentMethod}</p>}
+        </div>
+        
+        <div className="p-6 bg-gray-50 rounded-xl border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Liability Waiver</h3>
           <div className="h-40 overflow-y-auto p-4 bg-white border border-gray-200 rounded-lg mb-4 text-sm text-gray-700">
             <p className="mb-2">By participating in Panorama Hills Soccer Club activities, you acknowledge and agree to the following:</p>
@@ -578,38 +620,31 @@ export default function RegisterPage() {
         </div>
 
         <div className="p-6 bg-gray-50 rounded-xl border border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
-          <div className="space-y-4">
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="paymentOnline"
-                name="paymentMethod"
-                value="online-stripe"
-                checked={formData.paymentMethod === 'online-stripe'}
-                onChange={handleChange}
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500"
-              />
-              <label htmlFor="paymentOnline" className="ml-3 block text-sm font-medium text-gray-700">
-                Online - Stripe (3% PP service fee added)
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                type="radio"
-                id="paymentInPerson"
-                name="paymentMethod"
-                value="in-person-cash-cheque"
-                checked={formData.paymentMethod === 'in-person-cash-cheque'}
-                onChange={handleChange}
-                className="h-4 w-4 text-primary-600 focus:ring-primary-500"
-              />
-              <label htmlFor="paymentInPerson" className="ml-3 block text-sm font-medium text-gray-700">
-                In Person - Cash/Cheque
-              </label>
-            </div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Terms and Conditions</h3>
+          <div className="h-40 overflow-y-auto p-4 bg-white border border-gray-200 rounded-lg mb-4 text-sm text-gray-700">
+            <p className="mb-2">By registering with Panorama Hills Soccer Club, you agree to:</p>
+            <ol className="list-decimal pl-5 space-y-2">
+              <li>Follow all club rules and regulations</li>
+              <li>Maintain appropriate behavior during all activities</li>
+              <li>Pay all fees in a timely manner</li>
+              <li>Provide accurate and up-to-date information</li>
+              <li>Notify the club of any changes to contact information</li>
+            </ol>
           </div>
-          {errors.paymentMethod && <p className="mt-2 text-sm text-red-600">{errors.paymentMethod}</p>}
+          <div className="flex items-start">
+            <input
+              type="checkbox"
+              id="agreeTerms"
+              name="agreeTerms"
+              checked={formData.agreeTerms}
+              onChange={handleChange}
+              className="mt-1 mr-2 h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500"
+            />
+            <label htmlFor="agreeTerms" className="text-gray-700">
+              I have read and agree to the terms and conditions *
+            </label>
+          </div>
+          {errors.agreeTerms && <p className="mt-1 text-sm text-red-600">{errors.agreeTerms}</p>}
         </div>
       </div>
       
@@ -624,6 +659,7 @@ export default function RegisterPage() {
         <button
           type="submit"
           disabled={isLoading}
+          onClick={handleSubmit}
           className="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-300 flex items-center transform hover:scale-105 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
         >
           {isLoading ? (
