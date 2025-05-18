@@ -95,10 +95,13 @@ export async function POST(request) {
       ...data,
       paymentStatus: data.paymentStatus || 'unpaid',
       createdAt: new Date(),
-      updatedAt: new Date(),
-      seasonId: new ObjectId(data.seasonId), // Convert string ID to ObjectId
-      seasonName: data.seasonName
+      updatedAt: new Date()
     };
+
+    // Ensure seasonId is an ObjectId
+    if (typeof registrationData.seasonId === 'string') {
+      registrationData.seasonId = new ObjectId(registrationData.seasonId);
+    }
 
     // Log the data being used to create the registration
     console.log('Registration data:', registrationData);
@@ -106,12 +109,12 @@ export async function POST(request) {
     const registration = new Registration(registrationData);
 
     // Log the registration object before saving
-    console.log('Creating registration with data:', registration);
+    console.log('Creating registration with data:', registration.toObject());
 
-    await registration.save();
+    const savedRegistration = await registration.save();
 
     // Log the saved registration
-    console.log('Saved registration:', registration);
+    console.log('Saved registration:', savedRegistration);
 
     // Send confirmation email with season information
     try {
@@ -130,7 +133,7 @@ export async function POST(request) {
     }
 
     // Convert the registration to a plain object and include all fields
-    const registrationResponse = registration.toObject();
+    const registrationResponse = savedRegistration.toObject();
     
     return NextResponse.json({ 
       success: true, 
