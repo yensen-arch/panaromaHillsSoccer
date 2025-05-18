@@ -99,7 +99,7 @@ export default function RegisterPage() {
     }
   }, [router, toast]);
 
-  // Add this after the existing useEffect
+  // Add useEffect to fetch active season
   useEffect(() => {
     const fetchActiveSeason = async () => {
       try {

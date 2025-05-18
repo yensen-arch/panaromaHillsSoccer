@@ -73,14 +73,6 @@ export default function SeasonDetails() {
                 <h1 className="text-4xl md:text-6xl font-bold text-white mb-6">
                   {season.heading}
                 </h1>
-                
-                <Link 
-                  href="/register" 
-                  className="inline-flex items-center px-8 py-4 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors transform hover:scale-105"
-                >
-                  Register Now
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
               </div>
             </div>
           </div>

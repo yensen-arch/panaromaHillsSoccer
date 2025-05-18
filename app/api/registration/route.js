@@ -1,6 +1,17 @@
 import { NextResponse } from 'next/server';
 import { dbConnect } from '@/lib/mongodb';
 import Registration from '@/lib/registration.model';
+import { verifyToken } from '@/lib/auth-server';
+import { ObjectId } from 'mongodb';
+
+// Helper function to verify admin token
+async function verifyAdminToken(request) {
+  const token = request.cookies.get('token')?.value;
+  if (!token) {
+    return false;
+  }
+  return await verifyToken(token);
+}
 
 export async function POST(request) {
   try {
@@ -26,7 +37,9 @@ export async function POST(request) {
       'emergencyPhone',
       'liabilityAccepted',
       'agreeTerms',
-      'paymentMethod'
+      'paymentMethod',
+      'seasonId',
+      'seasonName'
     ];
 
     const missingFields = requiredFields.filter(field => !data[field]);
@@ -69,7 +82,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid payment method' }, { status: 400 });
     }
 
-    // Add validation for season information
+    // Validate season information
     if (!data.seasonId || !data.seasonName) {
       return NextResponse.json(
         { success: false, message: 'Season information is required' },
@@ -77,14 +90,28 @@ export async function POST(request) {
       );
     }
 
-    const registration = new Registration({
+    // Create registration with all fields including season information
+    const registrationData = {
       ...data,
       paymentStatus: data.paymentStatus || 'unpaid',
       createdAt: new Date(),
-      updatedAt: new Date()
-    });
+      updatedAt: new Date(),
+      seasonId: new ObjectId(data.seasonId), // Convert string ID to ObjectId
+      seasonName: data.seasonName
+    };
+
+    // Log the data being used to create the registration
+    console.log('Registration data:', registrationData);
+
+    const registration = new Registration(registrationData);
+
+    // Log the registration object before saving
+    console.log('Creating registration with data:', registration);
 
     await registration.save();
+
+    // Log the saved registration
+    console.log('Saved registration:', registration);
 
     // Send confirmation email with season information
     try {
@@ -102,10 +129,13 @@ export async function POST(request) {
       console.error('Error sending confirmation email:', error);
     }
 
+    // Convert the registration to a plain object and include all fields
+    const registrationResponse = registration.toObject();
+    
     return NextResponse.json({ 
       success: true, 
       message: 'Registration created successfully',
-      registration: { ...registration, _id: registration._id }
+      registration: registrationResponse
     });
   } catch (error) {
     console.error('Error creating registration:', error);
@@ -116,8 +146,14 @@ export async function POST(request) {
   }
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
+    // Verify admin token for GET request
+    const isAdmin = await verifyAdminToken(request);
+    if (!isAdmin) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await dbConnect();
     const registrations = await Registration.find().sort({ createdAt: -1 });
     return NextResponse.json(registrations);
@@ -128,6 +164,12 @@ export async function GET() {
 
 export async function PUT(request) {
   try {
+    // Verify admin token for PUT request
+    const isAdmin = await verifyAdminToken(request);
+    if (!isAdmin) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await dbConnect();
     const { _id, paymentStatus } = await request.json();
     if (!_id || !['paid', 'unpaid'].includes(paymentStatus)) {

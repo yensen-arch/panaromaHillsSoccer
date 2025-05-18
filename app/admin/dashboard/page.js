@@ -1225,6 +1225,7 @@ export default function AdminDashboard() {
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Phone</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Season</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Membership</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Liability</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment</th>
@@ -1241,6 +1242,7 @@ export default function AdminDashboard() {
                 <td className="px-4 py-3 whitespace-nowrap">{reg.childFirstName} {reg.childLastName}</td>
                 <td className="px-4 py-3 whitespace-nowrap">{reg.email}</td>
                 <td className="px-4 py-3 whitespace-nowrap">{reg.phone}</td>
+                <td className="px-4 py-3 whitespace-nowrap">{reg.seasonName || 'N/A'}</td>
                 <td className="px-4 py-3 whitespace-nowrap">{reg.previousRegistration}</td>
                 <td className="px-4 py-3 whitespace-nowrap">{reg.liabilityAccepted ? 'Accepted' : 'Not Accepted'}</td>
                 <td className="px-4 py-3 whitespace-nowrap">
