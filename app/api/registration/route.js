@@ -32,7 +32,6 @@ export async function POST(request) {
       'postcode',
       'uniformSize',
       'previousRegistration',
-      'newsletterSubscription',
       'emergencyContact',
       'emergencyPhone',
       'liabilityAccepted',
@@ -52,8 +51,7 @@ export async function POST(request) {
 
     // Validate boolean fields
     if (typeof data.liabilityAccepted !== 'boolean' || 
-        typeof data.agreeTerms !== 'boolean' || 
-        typeof data.newsletterSubscription !== 'boolean') {
+        typeof data.agreeTerms !== 'boolean') {
       return NextResponse.json({ 
         error: 'Invalid boolean fields' 
       }, { status: 400 });
