@@ -10,6 +10,8 @@ import {
   Check
 } from 'lucide-react';
 import Image  from 'next/image';
+import { useToast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
 
 
 
@@ -19,8 +21,10 @@ const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 console.log("stripePublishableKey",process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
 export default function RegisterPage() {
+  const { toast } = useToast();
+  const router = useRouter();
   const [step, setStep] = useState(1);
-  const [showIntroModal, setShowIntroModal] = useState(true);
+  const [showIntroModal, setShowIntroModal] = useState(false);
   const [formData, setFormData] = useState({
     childFirstName: '',
     childLastName: '',
@@ -45,6 +49,54 @@ export default function RegisterPage() {
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [paymentStatus, setPaymentStatus] = useState(null);
+
+  // Add useEffect to check for Stripe success and handle intro modal
+  useEffect(() => {
+    // Check if we're returning from Stripe
+    const query = new URLSearchParams(window.location.search);
+    const sessionId = query.get('session_id');
+    
+    if (sessionId) {
+      // Verify the payment status
+      const verifyPayment = async () => {
+        try {
+          const response = await fetch(`/api/verify-payment?session_id=${sessionId}`);
+          if (response.ok) {
+            setPaymentStatus('success');
+            toast({
+              title: "Registration Successful",
+              description: "Thank you for registering with Panorama Hills Soccer Club!",
+            });
+            // Redirect to home after 2 seconds
+            setTimeout(() => {
+              router.push('/');
+            }, 2000);
+          } else {
+            setPaymentStatus('error');
+            toast({
+              title: "Payment Error",
+              description: "There was an error verifying your payment. Please contact support.",
+              variant: "destructive",
+            });
+          }
+        } catch (error) {
+          console.error('Error verifying payment:', error);
+          setPaymentStatus('error');
+          toast({
+            title: "Payment Error",
+            description: "There was an error verifying your payment. Please contact support.",
+            variant: "destructive",
+          });
+        }
+      };
+
+      verifyPayment();
+    } else {
+      // Only show intro modal if we're not returning from Stripe
+      setShowIntroModal(true);
+    }
+  }, [router, toast]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -135,6 +187,12 @@ export default function RegisterPage() {
     setIsLoading(true);
     
     try {
+      // Calculate total amount based on uniform selection
+      const baseAmount = 100;
+      const serviceFee = 0.03; // 3% service fee
+      const uniformDiscount = formData.uniformSize === "Don't need (has already)" ? 25 : 0;
+      const totalAmount = Math.round((baseAmount - uniformDiscount) * (1 + serviceFee));
+
       if (formData.paymentMethod === 'online-stripe') {
         // For online payment, create an unpaid registration first
         const registrationResponse = await fetch('/api/registration', {
@@ -143,7 +201,8 @@ export default function RegisterPage() {
           body: JSON.stringify({
             ...formData,
             paymentStatus: 'unpaid',
-            paymentMethod: 'online-stripe'
+            paymentMethod: 'online-stripe',
+            totalAmount
           })
         });
 
@@ -159,7 +218,7 @@ export default function RegisterPage() {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             registrationId: registrationData._id,
-            amount: 103, // $100 + 3% fee
+            amount: totalAmount,
             email: formData.email,
             name: `${formData.childFirstName} ${formData.childLastName}`
           })
@@ -169,7 +228,6 @@ export default function RegisterPage() {
           throw new Error('Failed to create checkout session');
         }
 
-        console.log('response', response);
         const { sessionId } = await response.json();
         const stripe = await stripePromise;
         const { error } = await stripe.redirectToCheckout({ sessionId });
@@ -177,6 +235,11 @@ export default function RegisterPage() {
         if (error) {
           console.error('Error:', error);
           setPaymentStatus('error');
+          toast({
+            title: "Payment Error",
+            description: "There was an error processing your payment. Please try again.",
+            variant: "destructive",
+          });
         }
       } else {
         // For offline payment, create the registration directly
@@ -186,7 +249,8 @@ export default function RegisterPage() {
           body: JSON.stringify({
             ...formData,
             paymentStatus: 'unpaid',
-            paymentMethod: 'in-person-cash-cheque'
+            paymentMethod: 'in-person-cash-cheque',
+            totalAmount
           })
         });
 
@@ -195,10 +259,24 @@ export default function RegisterPage() {
         }
 
         setPaymentStatus('success');
+        toast({
+          title: "Registration Successful",
+          description: "Thank you for registering with Panorama Hills Soccer Club!",
+        });
+        
+        // Redirect to home after 2 seconds
+        setTimeout(() => {
+          router.push('/');
+        }, 2000);
       }
     } catch (error) {
       console.error('Error:', error);
       setPaymentStatus('error');
+      toast({
+        title: "Registration Error",
+        description: "There was an error processing your registration. Please try again.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -559,6 +637,11 @@ export default function RegisterPage() {
         <div className="p-6 bg-gray-50 rounded-xl border border-gray-200">
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Payment Method</h3>
           <div className="space-y-4">
+            {formData.uniformSize === "Don't need (has already)" && (
+              <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <p className="text-green-700 font-medium">Uniform Discount Applied: -$25.00</p>
+              </div>
+            )}
             <div className="flex items-center">
               <input
                 type="radio"
@@ -570,7 +653,7 @@ export default function RegisterPage() {
                 className="h-4 w-4 text-primary-600 focus:ring-primary-500"
               />
               <label htmlFor="paymentOnline" className="ml-3 block text-sm font-medium text-gray-700">
-                Online - Stripe ($103.00 - includes 3% service fee)
+                Online - Stripe (${formData.uniformSize === "Don't need (has already)" ? '75.75' : '103.00'} - includes 3% service fee)
               </label>
             </div>
             <div className="flex items-center">
@@ -584,7 +667,7 @@ export default function RegisterPage() {
                 className="h-4 w-4 text-primary-600 focus:ring-primary-500"
               />
               <label htmlFor="paymentInPerson" className="ml-3 block text-sm font-medium text-gray-700">
-                In Person - Cash/Cheque ($100.00)
+                In Person - Cash/Cheque (${formData.uniformSize === "Don't need (has already)" ? '75.00' : '100.00'})
               </label>
             </div>
           </div>
