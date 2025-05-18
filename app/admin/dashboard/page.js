@@ -39,6 +39,18 @@ export default function AdminDashboard() {
   const [registrations, setRegistrations] = useState([]);
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showRegistrationModal, setShowRegistrationModal] = useState(false);
+  const [showSeasonForm, setShowSeasonForm] = useState(false);
+  const [seasonFormData, setSeasonFormData] = useState({
+    startDate: '',
+    endDate: '',
+    heading: '',
+    description: '',
+    bannerImage: '',
+    isActive: false
+  });
+  const [isEditingSeason, setIsEditingSeason] = useState(false);
+  const [currentSeasonId, setCurrentSeasonId] = useState(null);
+  const [seasons, setSeasons] = useState([]);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -107,6 +119,28 @@ export default function AdminDashboard() {
       });
     }
   };
+
+  const fetchSeasons = async () => {
+    try {
+      const response = await fetch('/api/admin/create-season');
+      if (!response.ok) throw new Error('Failed to fetch seasons');
+      const data = await response.json();
+      setSeasons(data.seasons);
+    } catch (error) {
+      console.error('Error fetching seasons:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch seasons",
+        variant: "destructive",
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === 'seasons') {
+      fetchSeasons();
+    }
+  }, [activeTab]);
 
   const handleLogout = async () => {
     await logout();
@@ -323,6 +357,109 @@ export default function AdminDashboard() {
     setShowRegistrationModal(true);
   };
 
+  const handleSeasonInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setSeasonFormData({
+      ...seasonFormData,
+      [name]: type === 'checkbox' ? checked : value
+    });
+  };
+
+  const handleAddSeason = () => {
+    setIsEditingSeason(false);
+    setCurrentSeasonId(null);
+    setSeasonFormData({
+      startDate: '',
+      endDate: '',
+      heading: '',
+      description: '',
+      bannerImage: '',
+      isActive: false
+    });
+    setShowSeasonForm(true);
+  };
+
+  const handleEditSeason = (season) => {
+    setIsEditingSeason(true);
+    setCurrentSeasonId(season._id);
+    setSeasonFormData({
+      startDate: new Date(season.startDate).toISOString().split('T')[0],
+      endDate: new Date(season.endDate).toISOString().split('T')[0],
+      heading: season.heading,
+      description: season.description,
+      bannerImage: season.bannerImage,
+      isActive: season.isActive
+    });
+    setShowSeasonForm(true);
+  };
+
+  const handleDeleteSeason = async (id) => {
+    if (!confirm('Are you sure you want to delete this season?')) {
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/admin/create-season?id=${id}`, {
+        method: 'DELETE',
+        credentials: 'include'
+      });
+
+      if (!response.ok) throw new Error('Failed to delete season');
+
+      toast({
+        title: "Success",
+        description: "Season deleted successfully",
+      });
+
+      fetchSeasons();
+    } catch (error) {
+      console.error('Error deleting season:', error);
+      toast({
+        title: "Error",
+        description: error.message || 'Failed to delete season',
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleSubmitSeason = async (e) => {
+    e.preventDefault();
+
+    try {
+      const url = '/api/admin/create-season';
+      const method = isEditingSeason ? 'PUT' : 'POST';
+      
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(isEditingSeason ? {
+          _id: currentSeasonId,
+          ...seasonFormData
+        } : seasonFormData),
+        credentials: 'include'
+      });
+
+      if (!response.ok) throw new Error('Failed to save season');
+
+      toast({
+        title: "Success",
+        description: isEditingSeason ? "Season updated successfully" : "Season created successfully",
+      });
+
+      setShowSeasonForm(false);
+      fetchSeasons();
+    } catch (error) {
+      console.error('Error saving season:', error);
+      toast({
+        title: "Error",
+        description: error.message || 'Failed to save season',
+        variant: "destructive",
+      });
+    }
+  };
+
   // Render loading state or redirect if not on client yet
   if (!isClient) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -534,6 +671,212 @@ export default function AdminDashboard() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderSeasonsContent = () => {
+    return (
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Season Management</h2>
+          <button
+            onClick={handleAddSeason}
+            className="w-full sm:w-auto px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 flex items-center justify-center"
+          >
+            <Plus className="mr-2 h-5 w-5" />
+            Add Season
+          </button>
+        </div>
+        
+        {showSeasonForm && (
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <h3 className="text-lg font-semibold mb-4">
+              {isEditingSeason ? 'Edit Season' : 'Add Season'}
+            </h3>
+            <form onSubmit={handleSubmitSeason} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="startDate" className="block text-sm font-medium text-gray-700 mb-1">
+                    Start Date
+                  </label>
+                  <input
+                    type="date"
+                    id="startDate"
+                    name="startDate"
+                    value={seasonFormData.startDate}
+                    onChange={handleSeasonInputChange}
+                    required
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="endDate" className="block text-sm font-medium text-gray-700 mb-1">
+                    End Date
+                  </label>
+                  <input
+                    type="date"
+                    id="endDate"
+                    name="endDate"
+                    value={seasonFormData.endDate}
+                    onChange={handleSeasonInputChange}
+                    required
+                    className="w-full p-2 border border-gray-300 rounded-md"
+                  />
+                </div>
+              </div>
+              
+              <div>
+                <label htmlFor="heading" className="block text-sm font-medium text-gray-700 mb-1">
+                  Heading
+                </label>
+                <input
+                  type="text"
+                  id="heading"
+                  name="heading"
+                  value={seasonFormData.heading}
+                  onChange={handleSeasonInputChange}
+                  required
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                />
+              </div>
+              
+              <div>
+                <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  id="description"
+                  name="description"
+                  rows="4"
+                  value={seasonFormData.description}
+                  onChange={handleSeasonInputChange}
+                  required
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                ></textarea>
+              </div>
+              
+              <div>
+                <label htmlFor="bannerImage" className="block text-sm font-medium text-gray-700 mb-1">
+                  Banner Image URL
+                </label>
+                <input
+                  type="url"
+                  id="bannerImage"
+                  name="bannerImage"
+                  value={seasonFormData.bannerImage}
+                  onChange={handleSeasonInputChange}
+                  required
+                  className="w-full p-2 border border-gray-300 rounded-md"
+                  placeholder="https://example.com/image.jpg"
+                />
+              </div>
+              
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="isActive"
+                  name="isActive"
+                  checked={seasonFormData.isActive}
+                  onChange={handleSeasonInputChange}
+                  className="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded"
+                />
+                <label htmlFor="isActive" className="ml-2 block text-sm text-gray-700">
+                  Active Season
+                </label>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-3">
+                <button
+                  type="button"
+                  onClick={() => setShowSeasonForm(false)}
+                  className="w-full sm:w-auto px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="w-full sm:w-auto px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700"
+                >
+                  {isEditingSeason ? 'Update' : 'Create'} Season
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+        
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Season
+                  </th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Duration
+                  </th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Status
+                  </th>
+                  <th scope="col" className="px-4 sm:px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {seasons.map((season) => (
+                  <tr key={season._id}>
+                    <td className="px-4 sm:px-6 py-4">
+                      <div className="flex items-center">
+                        <div className="h-10 w-10 flex-shrink-0">
+                          <img 
+                            className="h-10 w-10 rounded-md object-cover" 
+                            src={season.bannerImage} 
+                            alt={season.heading} 
+                          />
+                        </div>
+                        <div className="ml-4">
+                          <div className="text-sm font-medium text-gray-900">{season.heading}</div>
+                          <div className="text-sm text-gray-500 truncate max-w-xs">{season.description}</div>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">
+                        {new Date(season.startDate).toLocaleDateString()} - {new Date(season.endDate).toLocaleDateString()}
+                      </div>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap">
+                      <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        season.isActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                      }`}>
+                        {season.isActive ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="px-4 sm:px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex justify-end space-x-2">
+                        <button
+                          onClick={() => handleEditSeason(season)}
+                          className="text-blue-600 hover:text-blue-900"
+                        >
+                          <Edit className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteSeason(season._id)}
+                          className="text-red-600 hover:text-red-900"
+                        >
+                          <Trash className="h-5 w-5" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
@@ -975,6 +1318,17 @@ export default function AdminDashboard() {
               <Users className="mr-3 h-5 w-5" />
               Registrations
             </button>
+            <button
+              onClick={() => setActiveTab('seasons')}
+              className={`flex items-center px-4 py-2 text-sm font-medium rounded-md w-full ${
+                activeTab === 'seasons' 
+                  ? 'bg-primary-700 text-white' 
+                  : 'text-primary-100 hover:bg-primary-700'
+              }`}
+            >
+              <Calendar className="mr-3 h-5 w-5" />
+              Seasons
+            </button>
           </nav>
         </div>
         <div className="border-t border-primary-700 p-4">
@@ -1041,6 +1395,15 @@ export default function AdminDashboard() {
             <Users className="h-5 w-5" />
             <span className="text-xs mt-1">Registrations</span>
           </button>
+          <button
+            onClick={() => setActiveTab('seasons')}
+            className={`flex flex-col items-center py-2 ${
+              activeTab === 'seasons' ? 'text-white' : 'text-primary-100'
+            }`}
+          >
+            <Calendar className="h-5 w-5" />
+            <span className="text-xs mt-1">Seasons</span>
+          </button>
         </div>
       </div>
 
@@ -1054,6 +1417,7 @@ export default function AdminDashboard() {
               {activeTab === 'news' && renderNewsContent()}
               {activeTab === 'contact' && renderContactQueriesContent()}
               {activeTab === 'registrations' && renderRegistrationsContent()}
+              {activeTab === 'seasons' && renderSeasonsContent()}
             </div>
           </div>
         </main>
