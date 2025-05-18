@@ -8,12 +8,15 @@ import { TestimonialsSection } from '@/components/home/testimonials-section';
 import { JoinCTA } from '@/components/home/join-cta';
 import { Navbar } from '@/components/ui/navbar';
 import { Footer } from '@/components/ui/footer';
+import { ActiveSeason } from '@/components/home/active-season';
 
 export default function Home() {
   return (
     <div className="flex flex-col w-full">
       <Navbar />
       <HeroSection />
+      
+      <ActiveSeason />
       
       <section className="container mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">

@@ -5,8 +5,13 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  images: { 
-    domains: ['images.pexels.com', 'images.unsplash.com', 'res-console.cloudinary.com', 'res.cloudinary.com'],
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', // matches all domains
+      },
+    ],
   },
 };
 

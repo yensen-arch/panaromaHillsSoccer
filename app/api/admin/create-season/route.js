@@ -1,9 +1,32 @@
 import { NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 import { ObjectId } from 'mongodb';
+import { verifyToken } from '@/lib/auth-server';
+
+// Helper function to verify admin token
+async function verifyAdminToken(request) {
+  const cookies = request.cookies;
+  const token = cookies.get('token')?.value;
+  
+  if (!token) {
+    return false;
+  }
+  
+  const payload = await verifyToken(token);
+  return payload?.role === 'admin';
+}
 
 export async function POST(request) {
   try {
+    // Verify admin token
+    const isAdmin = await verifyAdminToken(request);
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { startDate, endDate, heading, description, bannerImage, isActive } = await request.json();
     
     const client = await clientPromise;
@@ -57,6 +80,15 @@ export async function GET() {
 
 export async function PUT(request) {
   try {
+    // Verify admin token
+    const isAdmin = await verifyAdminToken(request);
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { _id, startDate, endDate, heading, description, bannerImage, isActive } = await request.json();
     
     const client = await clientPromise;
@@ -92,6 +124,15 @@ export async function PUT(request) {
 
 export async function DELETE(request) {
   try {
+    // Verify admin token
+    const isAdmin = await verifyAdminToken(request);
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      );
+    }
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     
