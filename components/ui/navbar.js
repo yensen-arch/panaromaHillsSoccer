@@ -110,56 +110,66 @@ export function Navbar() {
       </div>
 
       {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-white shadow-lg absolute top-full left-0 right-0 z-50">
-          <div className="container mx-auto px-4 py-4">
-            <nav className="flex flex-col space-y-4">
-              <Link 
-                href="/" 
-                className={`py-2 px-4 rounded-md ${isActive('/') ? 'bg-primary-50 text-primary-600 font-semibold' : 'text-gray-700 hover:bg-gray-100'}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Home
-              </Link>
-              <Link 
-                href="/latest" 
-                className={`py-2 px-4 rounded-md ${isActive('/latest') ? 'bg-primary-50 text-primary-600 font-semibold' : 'text-gray-700 hover:bg-gray-100'}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Latest
-              </Link>
-              <Link 
-                href="/gallery" 
-                className={`py-2 px-4 rounded-md ${isActive('/gallery') ? 'bg-primary-50 text-primary-600 font-semibold' : 'text-gray-700 hover:bg-gray-100'}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Gallery
-              </Link>
-              <Link 
-                href="/location" 
-                className={`py-2 px-4 rounded-md ${isActive('/location') ? 'bg-primary-50 text-primary-600 font-semibold' : 'text-gray-700 hover:bg-gray-100'}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Location
-              </Link>
-              <Link 
-                href="/register" 
-                className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md font-medium text-center"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Join Now
-              </Link>
-              <Link 
-                href="/contact" 
-                className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md font-medium text-center"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Contact Us
-              </Link>
-            </nav>
-          </div>
+      <div 
+        className={`md:hidden bg-white shadow-lg absolute top-full left-0 right-0 z-50 transition-all duration-300 ease-in-out transform ${
+          isMenuOpen ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-2 pointer-events-none'
+        }`}
+      >
+        <div className="container mx-auto px-4 py-4">
+          <nav className="flex flex-col space-y-4">
+            <Link 
+              href="/" 
+              className={`py-2 px-4 rounded-md transition-colors duration-200 ${
+                isActive('/') ? 'bg-primary-50 text-primary-600 font-semibold' : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Home
+            </Link>
+            <Link 
+              href="/latest" 
+              className={`py-2 px-4 rounded-md transition-colors duration-200 ${
+                isActive('/latest') ? 'bg-primary-50 text-primary-600 font-semibold' : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Latest
+            </Link>
+            <Link 
+              href="/gallery" 
+              className={`py-2 px-4 rounded-md transition-colors duration-200 ${
+                isActive('/gallery') ? 'bg-primary-50 text-primary-600 font-semibold' : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Gallery
+            </Link>
+            <Link 
+              href="/location" 
+              className={`py-2 px-4 rounded-md transition-colors duration-200 ${
+                isActive('/location') ? 'bg-primary-50 text-primary-600 font-semibold' : 'text-gray-700 hover:bg-gray-100'
+              }`}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Location
+            </Link>
+            <Link 
+              href="/register" 
+              className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md font-medium text-center transition-colors duration-200"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Join Now
+            </Link>
+            <Link 
+              href="/contact" 
+              className="bg-primary-600 hover:bg-primary-700 text-white py-2 px-4 rounded-md font-medium text-center transition-colors duration-200"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Contact Us
+            </Link>
+          </nav>
         </div>
-      )}
+      </div>
     </header>
   );
 }

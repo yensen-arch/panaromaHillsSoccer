@@ -258,6 +258,21 @@ export default function RegisterPage() {
           throw new Error('Failed to register user');
         }
 
+        // Send confirmation email
+        const emailResponse = await fetch('/api/send-registration-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: formData.email,
+            childName: `${formData.childFirstName} ${formData.childLastName}`,
+            parentName: formData.parentName
+          })
+        });
+
+        if (!emailResponse.ok) {
+          console.error('Failed to send confirmation email');
+        }
+
         setPaymentStatus('success');
         toast({
           title: "Registration Successful",
