@@ -15,7 +15,8 @@ import {
   Mail,
   X,
   CheckCircle,
-  Clock
+  Clock,
+  Eye
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { logout, checkAuth } from '@/lib/auth-client';
@@ -36,6 +37,8 @@ export default function AdminDashboard() {
   const [selectedQuery, setSelectedQuery] = useState(null);
   const [showQueryModal, setShowQueryModal] = useState(false);
   const [registrations, setRegistrations] = useState([]);
+  const [selectedRegistration, setSelectedRegistration] = useState(null);
+  const [showRegistrationModal, setShowRegistrationModal] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
 
@@ -315,6 +318,11 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleViewRegistration = (registration) => {
+    setSelectedRegistration(registration);
+    setShowRegistrationModal(true);
+  };
+
   // Render loading state or redirect if not on client yet
   if (!isClient) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -412,6 +420,117 @@ export default function AdminDashboard() {
                     <Mail className="h-4 w-4 mr-2" />
                     Responded
                   </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderRegistrationDetailsModal = () => {
+    if (!selectedRegistration) return null;
+
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="p-4 sm:p-6">
+            <div className="flex justify-between items-start mb-6">
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Registration Details</h3>
+              <button
+                onClick={() => setShowRegistrationModal(false)}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500">Child's Information</h4>
+                  <div className="mt-2 space-y-2">
+                    <p className="text-sm text-gray-900">
+                      <span className="font-medium">Name:</span> {selectedRegistration.childFirstName} {selectedRegistration.childLastName}
+                    </p>
+                    <p className="text-sm text-gray-900">
+                      <span className="font-medium">Date of Birth:</span> {new Date(selectedRegistration.dateOfBirth).toLocaleDateString()}
+                    </p>
+                    <p className="text-sm text-gray-900">
+                      <span className="font-medium">Gender:</span> {selectedRegistration.gender}
+                    </p>
+                    <p className="text-sm text-gray-900">
+                      <span className="font-medium">Uniform Size:</span> {selectedRegistration.uniformSize}
+                    </p>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="text-sm font-medium text-gray-500">Parent's Information</h4>
+                  <div className="mt-2 space-y-2">
+                    <p className="text-sm text-gray-900">
+                      <span className="font-medium">Name:</span> {selectedRegistration.parentName}
+                    </p>
+                    <p className="text-sm text-gray-900">
+                      <span className="font-medium">Email:</span> {selectedRegistration.email}
+                    </p>
+                    <p className="text-sm text-gray-900">
+                      <span className="font-medium">Phone:</span> {selectedRegistration.phone}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Address</h4>
+                <div className="mt-2">
+                  <p className="text-sm text-gray-900">{selectedRegistration.address}</p>
+                  <p className="text-sm text-gray-900">{selectedRegistration.city}, {selectedRegistration.postcode}</p>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Emergency Contact</h4>
+                <div className="mt-2 space-y-2">
+                  <p className="text-sm text-gray-900">
+                    <span className="font-medium">Name:</span> {selectedRegistration.emergencyContact}
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    <span className="font-medium">Phone:</span> {selectedRegistration.emergencyPhone}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Additional Information</h4>
+                <div className="mt-2 space-y-2">
+                  <p className="text-sm text-gray-900">
+                    <span className="font-medium">Previous Registration:</span> {selectedRegistration.previousRegistration}
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    <span className="font-medium">Medical Conditions:</span> {selectedRegistration.medicalConditions || 'None'}
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    <span className="font-medium">Newsletter Subscription:</span> {selectedRegistration.newsletterSubscription ? 'Yes' : 'No'}
+                  </p>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-500">Payment Information</h4>
+                <div className="mt-2 space-y-2">
+                  <p className="text-sm text-gray-900">
+                    <span className="font-medium">Status:</span>{' '}
+                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                      selectedRegistration.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    }`}>
+                      {selectedRegistration.paymentStatus}
+                    </span>
+                  </p>
+                  <p className="text-sm text-gray-900">
+                    <span className="font-medium">Method:</span> {selectedRegistration.paymentMethod}
+                  </p>
                 </div>
               </div>
             </div>
@@ -766,22 +885,32 @@ export default function AdminDashboard() {
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Membership</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Liability</th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment</th>
-              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Toggle Paid</th>
+              <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white divide-y divide-gray-200">
             {registrations.map((reg) => (
-              <tr key={reg._id}>
-                <td className="px-4 py-3 whitespace-nowrap">{reg.firstName} {reg.lastName}</td>
+              <tr 
+                key={reg._id}
+                onClick={() => handleViewRegistration(reg)}
+                className="cursor-pointer hover:bg-gray-50 transition-colors"
+              >
+                <td className="px-4 py-3 whitespace-nowrap">{reg.childFirstName} {reg.childLastName}</td>
                 <td className="px-4 py-3 whitespace-nowrap">{reg.email}</td>
                 <td className="px-4 py-3 whitespace-nowrap">{reg.phone}</td>
-                <td className="px-4 py-3 whitespace-nowrap">{reg.membershipType}</td>
+                <td className="px-4 py-3 whitespace-nowrap">{reg.previousRegistration}</td>
                 <td className="px-4 py-3 whitespace-nowrap">{reg.liabilityAccepted ? 'Accepted' : 'Not Accepted'}</td>
                 <td className="px-4 py-3 whitespace-nowrap">
                   <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${reg.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{reg.paymentStatus}</span>
                 </td>
                 <td className="px-4 py-3 whitespace-nowrap">
-                  <button onClick={() => handleTogglePaid(reg._id, reg.paymentStatus)} className="px-3 py-1 rounded bg-primary-600 text-white hover:bg-primary-700">
+                  <button 
+                    onClick={(e) => {
+                      e.stopPropagation(); // Prevent row click when clicking the button
+                      handleTogglePaid(reg._id, reg.paymentStatus);
+                    }}
+                    className="px-3 py-1 rounded bg-primary-600 text-white hover:bg-primary-700"
+                  >
                     Mark as {reg.paymentStatus === 'paid' ? 'Unpaid' : 'Paid'}
                   </button>
                 </td>
@@ -931,6 +1060,7 @@ export default function AdminDashboard() {
       </div>
 
       {showQueryModal && renderQueryDetailsModal()}
+      {showRegistrationModal && renderRegistrationDetailsModal()}
     </div>
   );
 }
