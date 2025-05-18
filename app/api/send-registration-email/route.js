@@ -3,7 +3,7 @@ import nodemailer from 'nodemailer';
 
 export async function POST(request) {
   try {
-    const { email, childName, parentName } = await request.json();
+    const { email, childName, parentName, seasonName } = await request.json();
 
     // Create a transporter using SMTP
     const transporter = nodemailer.createTransport({
@@ -18,22 +18,35 @@ export async function POST(request) {
 
     // Email content
     const mailOptions = {
-      from: `"Panorama Hills Soccer Club" <${process.env.SMTP_USER}>`,
+      from: process.env.SMTP_USER,
       to: email,
       subject: 'Welcome to Panorama Hills Soccer Club!',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-          <h2 style="color: #2563eb;">Welcome to Panorama Hills Soccer Club!</h2>
+          <h1 style="color: #2563eb; text-align: center;">Welcome to Panorama Hills Soccer Club!</h1>
+          
           <p>Dear ${parentName},</p>
-          <p>Thank you for registering ${childName} with Panorama Hills Soccer Club. We're excited to have you join our soccer community!</p>
-          <p>Here's what happens next:</p>
-          <ul>
-            <li>You'll receive additional information about practice schedules and team assignments</li>
-            <li>Our coaches will contact you with specific details about your child's team</li>
-            <li>Please ensure all required equipment is ready for the first session</li>
-          </ul>
-          <p>If you have any questions, please don't hesitate to contact us.</p>
-          <p>Best regards,<br>Panorama Hills Soccer Club Team</p>
+          
+          <p>Thank you for registering ${childName} for the <strong>${seasonName}</strong> season at Panorama Hills Soccer Club!</p>
+          
+          <div style="background-color: #f3f4f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+            <h2 style="color: #1e40af; margin-top: 0;">Next Steps:</h2>
+            <ol>
+              <li>Complete your payment (if not already done)</li>
+              <li>Attend the orientation session (details will be sent separately)</li>
+              <li>Get your uniform and equipment ready</li>
+            </ol>
+          </div>
+          
+          <p>We're excited to have ${childName} join our soccer community and look forward to seeing them on the field!</p>
+          
+          <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #e5e7eb;">
+            <p style="color: #6b7280; font-size: 14px;">
+              If you have any questions, please don't hesitate to contact us:<br>
+              Email: info@panoramahillssoccer.com<br>
+              Phone: (123) 456-7890
+            </p>
+          </div>
         </div>
       `,
     };
@@ -41,11 +54,11 @@ export async function POST(request) {
     // Send email
     await transporter.sendMail(mailOptions);
 
-    return NextResponse.json({ success: true, message: 'Registration confirmation email sent successfully' });
+    return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error sending email:', error);
     return NextResponse.json(
-      { success: false, message: 'Failed to send registration confirmation email' },
+      { success: false, message: 'Failed to send email' },
       { status: 500 }
     );
   }

@@ -69,17 +69,50 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid payment method' }, { status: 400 });
     }
 
+    // Add validation for season information
+    if (!data.seasonId || !data.seasonName) {
+      return NextResponse.json(
+        { success: false, message: 'Season information is required' },
+        { status: 400 }
+      );
+    }
+
     const registration = new Registration({
       ...data,
       paymentStatus: data.paymentStatus || 'unpaid',
       createdAt: new Date(),
+      updatedAt: new Date()
     });
 
     await registration.save();
-    return NextResponse.json(registration);
+
+    // Send confirmation email with season information
+    try {
+      await fetch('/api/send-registration-email', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: data.email,
+          childName: `${data.childFirstName} ${data.childLastName}`,
+          parentName: data.parentName,
+          seasonName: data.seasonName
+        })
+      });
+    } catch (error) {
+      console.error('Error sending confirmation email:', error);
+    }
+
+    return NextResponse.json({ 
+      success: true, 
+      message: 'Registration created successfully',
+      registration: { ...registration, _id: registration._id }
+    });
   } catch (error) {
-    console.error('Registration error:', error);
-    return NextResponse.json({ error: 'Failed to register user' }, { status: 500 });
+    console.error('Error creating registration:', error);
+    return NextResponse.json(
+      { success: false, message: 'Failed to create registration' },
+      { status: 500 }
+    );
   }
 }
 

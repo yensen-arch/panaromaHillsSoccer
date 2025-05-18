@@ -44,7 +44,9 @@ export default function RegisterPage() {
     medicalConditions: '',
     liabilityAccepted: false,
     agreeTerms: false,
-    paymentMethod: ''
+    paymentMethod: '',
+    seasonId: '',
+    seasonName: ''
   });
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
@@ -96,6 +98,28 @@ export default function RegisterPage() {
       setShowIntroModal(true);
     }
   }, [router, toast]);
+
+  // Add this after the existing useEffect
+  useEffect(() => {
+    const fetchActiveSeason = async () => {
+      try {
+        const response = await fetch('/api/seasons/active');
+        const data = await response.json();
+        
+        if (data.success && data.season) {
+          setFormData(prev => ({
+            ...prev,
+            seasonId: data.season._id,
+            seasonName: data.season.heading
+          }));
+        }
+      } catch (error) {
+        console.error('Error fetching active season:', error);
+      }
+    };
+
+    fetchActiveSeason();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
