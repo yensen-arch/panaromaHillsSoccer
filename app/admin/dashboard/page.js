@@ -17,11 +17,13 @@ import {
   CheckCircle,
   Clock,
   Eye,
-  BarChart2
+  BarChart2,
+  Download
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { logout, checkAuth } from '@/lib/auth-client';
 import Analytics from '@/app/components/Analytics';
+import jsPDF from 'jspdf';
 
 export default function AdminDashboard() {
   const [isClient, setIsClient] = useState(false);
@@ -462,6 +464,63 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleDownloadPDF = (registration) => {
+    const doc = new jsPDF();
+    
+    // Add title
+    doc.setFontSize(20);
+    doc.text('Registration Details', 20, 20);
+    
+    // Add child's information
+    doc.setFontSize(14);
+    doc.text('Child\'s Information', 20, 40);
+    doc.setFontSize(12);
+    doc.text(`Name: ${registration.childFirstName} ${registration.childLastName}`, 20, 50);
+    doc.text(`Date of Birth: ${new Date(registration.dateOfBirth).toLocaleDateString()}`, 20, 60);
+    doc.text(`Gender: ${registration.gender}`, 20, 70);
+    doc.text(`Uniform Size: ${registration.uniformSize}`, 20, 80);
+    
+    // Add parent's information
+    doc.setFontSize(14);
+    doc.text('Parent\'s Information', 20, 100);
+    doc.setFontSize(12);
+    doc.text(`Name: ${registration.parentName}`, 20, 110);
+    doc.text(`Email: ${registration.email}`, 20, 120);
+    doc.text(`Phone: ${registration.phone}`, 20, 130);
+    
+    // Add address
+    doc.setFontSize(14);
+    doc.text('Address', 20, 150);
+    doc.setFontSize(12);
+    doc.text(registration.address, 20, 160);
+    doc.text(`${registration.city}, ${registration.postcode}`, 20, 170);
+    
+    // Add emergency contact
+    doc.setFontSize(14);
+    doc.text('Emergency Contact', 20, 190);
+    doc.setFontSize(12);
+    doc.text(`Name: ${registration.emergencyContact}`, 20, 200);
+    doc.text(`Phone: ${registration.emergencyPhone}`, 20, 210);
+    
+    // Add additional information
+    doc.setFontSize(14);
+    doc.text('Additional Information', 20, 230);
+    doc.setFontSize(12);
+    doc.text(`Previous Registration: ${registration.previousRegistration}`, 20, 240);
+    doc.text(`Medical Conditions: ${registration.medicalConditions || 'None'}`, 20, 250);
+    doc.text(`Newsletter Subscription: ${registration.newsletterSubscription ? 'Yes' : 'No'}`, 20, 260);
+    
+    // Add payment information
+    doc.setFontSize(14);
+    doc.text('Payment Information', 20, 280);
+    doc.setFontSize(12);
+    doc.text(`Status: ${registration.paymentStatus}`, 20, 290);
+    doc.text(`Method: ${registration.paymentMethod}`, 20, 300);
+    
+    // Save the PDF
+    doc.save(`registration-${registration.childFirstName}-${registration.childLastName}.pdf`);
+  };
+
   // Render loading state or redirect if not on client yet
   if (!isClient) {
     return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
@@ -577,12 +636,21 @@ export default function AdminDashboard() {
           <div className="p-4 sm:p-6">
             <div className="flex justify-between items-start mb-6">
               <h3 className="text-lg sm:text-xl font-semibold text-gray-900">Registration Details</h3>
-              <button
-                onClick={() => setShowRegistrationModal(false)}
-                className="text-gray-400 hover:text-gray-500"
-              >
-                <X className="h-6 w-6" />
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => handleDownloadPDF(selectedRegistration)}
+                  className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-full"
+                  title="Download PDF"
+                >
+                  <Download className="h-5 w-5" />
+                </button>
+                <button
+                  onClick={() => setShowRegistrationModal(false)}
+                  className="text-gray-400 hover:text-gray-500"
+                >
+                  <X className="h-6 w-6" />
+                </button>
+              </div>
             </div>
 
             <div className="space-y-6">
