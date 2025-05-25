@@ -24,6 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 import { logout, checkAuth } from '@/lib/auth-client';
 import Analytics from '@/app/components/Analytics';
 import jsPDF from 'jspdf';
+import * as XLSX from 'xlsx';
 
 export default function AdminDashboard() {
   const [isClient, setIsClient] = useState(false);
@@ -519,6 +520,43 @@ export default function AdminDashboard() {
     
     // Save the PDF
     doc.save(`registration-${registration.childFirstName}-${registration.childLastName}.pdf`);
+  };
+
+  const handleBulkDownload = () => {
+    // Prepare data for XLSX
+    const data = registrations.map(reg => ({
+      'Child First Name': reg.childFirstName,
+      'Child Last Name': reg.childLastName,
+      'Parent Name': reg.parentName,
+      'Email': reg.email,
+      'Phone': reg.phone,
+      'Date of Birth': new Date(reg.dateOfBirth).toLocaleDateString(),
+      'Gender': reg.gender,
+      'Address': reg.address,
+      'City': reg.city,
+      'Postcode': reg.postcode,
+      'Uniform Size': reg.uniformSize,
+      'Previous Registration': reg.previousRegistration,
+      'Emergency Contact': reg.emergencyContact,
+      'Emergency Phone': reg.emergencyPhone,
+      'Medical Conditions': reg.medicalConditions || 'None',
+      'Newsletter Subscription': reg.newsletterSubscription ? 'Yes' : 'No',
+      'Liability Accepted': reg.liabilityAccepted ? 'Yes' : 'No',
+      'Payment Status': reg.paymentStatus,
+      'Payment Method': reg.paymentMethod,
+      'Season': reg.seasonName || 'N/A',
+      'Registration Date': new Date(reg.createdAt).toLocaleDateString()
+    }));
+
+    // Create worksheet
+    const ws = XLSX.utils.json_to_sheet(data);
+    
+    // Create workbook
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Registrations');
+    
+    // Generate and download file
+    XLSX.writeFile(wb, 'panorama-hills-registrations.xlsx');
   };
 
   // Render loading state or redirect if not on client yet
@@ -1287,6 +1325,13 @@ export default function AdminDashboard() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl sm:text-2xl font-bold text-gray-900">Registrations</h2>
+        <button
+          onClick={handleBulkDownload}
+          className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center"
+        >
+          <Download className="h-5 w-5 mr-2" />
+          Download All
+        </button>
       </div>
       <div className="bg-white rounded-lg shadow">
         <div className="overflow-x-auto">
