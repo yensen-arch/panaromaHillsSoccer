@@ -3,6 +3,9 @@ import Stripe from 'stripe';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+// Mark this route as dynamic to prevent static generation
+export const dynamic = 'force-dynamic';
+
 export async function GET(request) {
   try {
     const sessionId = request.nextUrl.searchParams.get('session_id');

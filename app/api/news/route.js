@@ -3,6 +3,9 @@ import clientPromise from '@/lib/mongodb';
 import { verifyToken } from '@/lib/auth-server';
 import { ObjectId } from 'mongodb';
 
+// Mark this route as dynamic to prevent static generation
+export const dynamic = 'force-dynamic';
+
 // Helper function to verify admin token
 async function verifyAdminToken(request) {
   const cookies = request.cookies;
