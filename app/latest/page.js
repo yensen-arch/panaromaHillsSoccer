@@ -3,6 +3,7 @@ import { LatestNewsFeed } from '@/components/latest/latest-news-feed';
 import { Navbar } from '@/components/ui/navbar';
 import { Footer } from '@/components/ui/footer';
 import Image from 'next/image';
+import clientPromise from '@/lib/mongodb';
 
 export const metadata = {
   title: 'Latest News & Updates | Panaroma Hills Soccer Club',
@@ -11,11 +12,19 @@ export const metadata = {
 
 export default async function LatestNewsPage() {
   // Fetch news data server-side
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/news`, {
-    cache: 'no-store' // Disable caching to always get fresh data
-  });
-  
-  const newsItems = await response.json();
+  const client = await clientPromise;
+  const db = client.db();
+  const newsItems = await db.collection('news')
+    .find({})
+    .sort({ createdAt: -1 })
+    .toArray();
+
+  // Convert ObjectIds to strings
+  const formattedNews = newsItems.map(item => ({
+    ...item,
+    _id: item._id.toString(),
+    createdAt: item.createdAt.toISOString()
+  }));
 
   return (
     <div className="flex flex-col w-full">
@@ -46,7 +55,7 @@ export default async function LatestNewsPage() {
           </div>
         </div>
         
-        <LatestNewsFeed initialNews={newsItems} />
+        <LatestNewsFeed initialNews={formattedNews} />
       </section>
       <Footer />
     </div>
